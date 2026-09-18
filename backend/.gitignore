@@ -1,0 +1,21 @@
+# Python Virtual Environments
+venv/
+.venv/
+
+# Environment Secrets
+.env
+.env.*
+!.env.example
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Pytest Cache
+.pytest_cache/
+
+# Local SQLite databases
+*.db
+*.sqlite
+*.sqlite3

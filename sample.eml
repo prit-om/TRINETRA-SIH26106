@@ -1,0 +1,10 @@
+From: John Smith <ceo@company-example.com>
+Return-Path: <bounce@fakecompany.net>
+Reply-To: attacker@fakecompany.net
+Subject: Urgent Wire Transfer Needed
+Date: Mon, 14 Sep 2026 10:00:00 +0530
+Received: from attacker.example (185.220.101.5) by mail.company-example.com; Mon, 14 Sep 2026 10:00:00 +0530
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+
+Urgent wire transfer needed immediately. Please review http://bit.ly/xyz123

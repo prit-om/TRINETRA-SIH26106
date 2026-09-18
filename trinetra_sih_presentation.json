@@ -1,0 +1,365 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "project_metadata": {
+    "project_name": "TRINETRA",
+    "full_title": "Trinetra: AI-Powered Email Threat Detection, GeoLocation & Forensic Intelligence Platform",
+    "problem_statement_id": "SIH26106",
+    "theme": "Blockchain & Cybersecurity",
+    "version": "1.0.0 Production-Ready Architecture",
+    "repo_path": "C:\\Users\\hp\\Desktop\\SIH26106\\TRINETRA_FINAL\\TRINETRA",
+    "tagline": "The Three-Eyed Forensic Shield: From Passive Filtering to Active Attribution & Court-Admissible Intelligence"
+  },
+  "original_message_access_architecture": {
+    "summary": "How Trinetra accesses, processes, and preserves the full original email message while maintaining DPDP Act privacy compliance and Section 63 BSA 2023 legal integrity.",
+    "ingestion_mechanisms": [
+      {
+        "mode": "IMAP Live Mailbox Monitor",
+        "implementation": "app/track_b/imap_ingestion.py & app/routes/analyze.py (/monitor/start)",
+        "capability": "Authenticates to enterprise mailboxes (INBOX/quarantine), polls unseen messages at configurable intervals (default 20s), and pulls the complete raw RFC 822 stream directly from the mail server."
+      },
+      {
+        "mode": "Raw File & Stream Upload",
+        "implementation": "app/services/email_parser.py",
+        "formats_supported": [".eml (RFC 822 standard)", ".msg (Outlook binary via extract-msg)", ".txt (raw ASCII headers+body)", "Direct MIME string paste"],
+        "capability": "Parses complete headers, plain text body, rich HTML DOM, embedded URLs, and binary attachments."
+      }
+    ],
+    "evidence_preservation_flow": [
+      "1. RAW INTAKE: Raw byte stream received via IMAP or file upload.",
+      "2. SHA-256 SEALING: Immediate hash generation (SHA-256 + HMAC) before any modification or sanitization.",
+      "3. SEPARATED STORAGE: Raw immutable evidence stored in encrypted storage; sanitized copy sent to processing.",
+      "4. DUAL-ROLE RBAC ACCESS: Controlled via API keys (ANALYST_API_KEY vs INVESTIGATOR_API_KEY):",
+      "   - Analyst Role: Views sanitized content with sensitive personal data redacted via Privacy Sandbox.",
+      "   - Investigator / LEA Role (GET /cases/{id}?role=investigator): Receives full, unmasked original email message, raw headers, and decoded attachment binaries for criminal prosecution.",
+      "5. HASH VERIFICATION ENDPOINT: GET /cases/{id}/verify recalculates SHA-256 dynamically to certify evidence authenticity."
+    ],
+    "privacy_sandbox": {
+      "implementation": "app/services/evidence.py (mask_pii)",
+      "masked_entities": ["Aadhaar Numbers", "PAN Numbers", "Phone Numbers", "Credit Card / Bank Account Numbers", "Personal Email Addresses", "Crypto Wallet Addresses"],
+      "compliance": "Digital Personal Data Protection (DPDP) Act, 2023"
+    }
+  },
+  "technical_architecture": {
+    "stage_1_ingestion_preprocessing": {
+      "title": "1. Ingestion & Pre-Processing",
+      "components": [
+        {
+          "name": "Input Handlers",
+          "details": ".eml, .msg, .txt, Raw MIME, and IMAP live monitor"
+        },
+        {
+          "name": "Evidence Sealing",
+          "details": "SHA-256 hashing at intake + tamper-evident audit event log"
+        },
+        {
+          "name": "PII Masker",
+          "details": "Automated regex/NER redactor masking sensitive data for analyst views"
+        },
+        {
+          "name": "MIME / RFC 5322 Parser",
+          "details": "Extracts headers, body text, HTML, URLs, and attachment payloads"
+        }
+      ]
+    },
+    "stage_2_three_layer_risk_fusion": {
+      "title": "2. Three-Layer Risk Fusion Engine",
+      "scoring_formula": "Base Score = L1(0.30) + L2(0.40) + L3(0.30) | Final Score = Base + Anonymity Bonus (max +5) + Attachment Bonus (max +10) | Range: 0 - 100",
+      "verdicts": {
+        "safe": "0 - 30",
+        "suspicious": "31 - 70",
+        "critical_dangerous": "71 - 100"
+      },
+      "layers": [
+        {
+          "layer_id": "L1",
+          "name": "Layer 1: Deterministic Header Forensics",
+          "weight": "30%",
+          "implementation": "app/services/header_forensics.py & app/services/relay_forensics.py",
+          "capabilities": [
+            "SPF Validation (DNS TXT v=spf1 lookup against connecting origin IP)",
+            "DKIM Verification (Cryptographic RSA/Ed25519 signature & body hash check)",
+            "DMARC Validation (Strict/relaxed alignment between From: domain and SPF/DKIM)",
+            "Chronological Relay & Timestamp Drift (Detects negative time deltas and relay manipulation)",
+            "Sender / Return-Path Mismatch (Exposes header spoofing and Reply-To redirection)"
+          ]
+        },
+        {
+          "layer_id": "L2",
+          "name": "Layer 2: Local & External Intelligence",
+          "weight": "40%",
+          "implementation": "app/track_b/layer2_engine.py & app/track_b/geolocation.py",
+          "capabilities": [
+            "GeoIP2 City/ASN Mapping (MaxMind GeoLite2 city-level latitude/longitude resolution)",
+            "Team Cymru BGP Routing Enrichment (Autonomous System Number and upstream transit ISP)",
+            "VirusTotal v3 Integration (Multi-engine reputation scans for embedded URLs and attachment hashes)",
+            "Lookalike Domain & Punycode Check (Damerau-Levenshtein distance & Unicode IDN homoglyph detection)",
+            "Anonymization & Tor Detection (Live Tor Project exit node list & commercial VPN egress matching)"
+          ]
+        },
+        {
+          "layer_id": "L3",
+          "name": "Layer 3: AI Forensic Reasoning",
+          "weight": "30%",
+          "implementation": "app/track_b/ai_forensic_reasoning.py & app/services/nlp_analysis.py",
+          "capabilities": [
+            "Gemini 2.5 Flash / Local Transformer (Contextual semantic reasoning over subject & body)",
+            "BEC & Financial Fraud Detection (Identifies wire transfer urgency, fake invoices, banking changes)",
+            "Executive Impersonation (Cross-checks display names against high-profile organizational targets)",
+            "Prompt Injection Protection (Sanitizes untrusted email content to prevent adversarial LLM takeover)",
+            "Deterministic Synthesis Fallback (Guaranteed offline rule-based scoring when offline or air-gapped)"
+          ]
+        }
+      ]
+    },
+    "stage_3_graph_campaign_intelligence": {
+      "title": "3. Graph & Campaign Intelligence",
+      "implementation": "app/track_b/graph_intelligence.py, neo4j_client.py, attribution.py",
+      "components": [
+        {
+          "name": "IOC Knowledge Graph",
+          "entities": ["Case ID", "Sender Address", "Sender Domain", "Origin IP", "Attachment Hash", "Server Timezone"]
+        },
+        {
+          "name": "Cross-Case Correlation",
+          "details": "Automatically links separate email cases that share identical origin IPs, domain clusters, or hashes"
+        },
+        {
+          "name": "Neo4j Graph Database",
+          "details": "Persistent graph store using Louvain community detection to cluster isolated phishing into coordinated campaigns"
+        },
+        {
+          "name": "Attribution Engine",
+          "details": "Calculates Cluster Confidence Scoring (0-100%) and maps tactics to MITRE ATT&CK T1566 techniques"
+        }
+      ]
+    },
+    "stage_4_delivery_storage": {
+      "title": "4. Delivery & Storage",
+      "components": [
+        {
+          "name": "Storage Engines",
+          "details": "SQLite (zero-setup local development) / PostgreSQL (enterprise concurrent multi-user SOC)"
+        },
+        {
+          "name": "React 19 SOC Dashboard",
+          "details": "Features interactive Leaflet.js GeoMap, Hop-by-Hop Relay Trace timeline, dynamic Evidence Cards, and IMAP Live Monitor"
+        },
+        {
+          "name": "WeasyPrint Dossier Generator",
+          "details": "Generates court-admissible forensic PDF reports compliant with Section 63 of Bharatiya Sakshya Adhiniyam, 2023"
+        }
+      ]
+    }
+  },
+  "slide_by_slide_ppt_blueprint": [
+    {
+      "slide_number": 1,
+      "slide_type": "Title Slide",
+      "title": "TRINETRA (SIH26106)",
+      "subtitle": "AI-Powered Email Threat Detection, GeoLocation & Forensic Intelligence Platform",
+      "theme": "Theme: Blockchain & Cybersecurity | Category: Law Enforcement & Defense",
+      "visuals": "Dark cybersecurity aesthetic, Trinetra Three-Eyed emblem, global packet trace mockup",
+      "speaker_notes": "Respected judges, we present TRINETRA—an indigenously engineered email threat detection and forensic intelligence platform built for Problem Statement SIH26106. Unlike traditional spam filters that merely drop or allow emails, Trinetra deconstructs headers, isolates originating infrastructure, reasons on threat intent using AI, and compiles court-admissible forensic evidence."
+    },
+    {
+      "slide_number": 2,
+      "slide_type": "The Burning Problem",
+      "title": "The Problem: Why Traditional Email Defenses Fail",
+      "subtitle": "The Blindspot Between Email Filtering and Cyber Investigation",
+      "bullet_points": [
+        "Email accounts for over 80% of enterprise cyberattacks, causing ₹200+ Crore in annual fraud losses in India.",
+        "Traditional Secure Email Gateways (SEGs) are binary filters—they either allow or drop an email, providing zero origin traceability.",
+        "Attackers forge headers, abuse lookalike domains, and use bulletproof cloud relays to bypass static blacklists.",
+        "Law Enforcement & SOC analysts waste 48 to 72 hours manually decoding relay chains during active investigations.",
+        "Forwarded emails lose evidentiary chain-of-custody, failing strict court admissibility standards under Section 63 BSA 2023."
+      ],
+      "highlight_box": "CRITICAL GAP: Detection without forensic origin tracing and campaign attribution leaves organizations perpetually vulnerable.",
+      "speaker_notes": "Existing tools like Proofpoint or Microsoft Defender are defensive gates, not investigative platforms. When a CEO fraud or payment diversion occurs, security teams cannot answer: What was the real originating IP? Which relay was compromised? Is this part of a wider campaign? Trinetra answers all three in seconds."
+    },
+    {
+      "slide_number": 3,
+      "slide_type": "Solution Overview",
+      "title": "The Solution: Trinetra — The Three-Eyed Engine",
+      "subtitle": "A Unified 4-Stage Forensic Intelligence Pipeline",
+      "four_pillars": [
+        {
+          "pillar": "Stage 1: Evidence Sealing & Ingestion",
+          "description": "Direct IMAP live mailbox ingestion + file upload with immediate SHA-256 evidence sealing before parsing."
+        },
+        {
+          "pillar": "Stage 2: Three-Layer Risk Fusion",
+          "description": "Deterministic Protocol Forensics (30%) + Local/External Threat Intel (40%) + AI Semantic Reasoning (30%)."
+        },
+        {
+          "pillar": "Stage 3: Graph Attribution",
+          "description": "Neo4j IOC Knowledge Graph clustering disparate phishing attacks into coordinated threat campaigns."
+        },
+        {
+          "pillar": "Stage 4: Delivery & Legal Dossier",
+          "description": "React 19 interactive analyst dashboard + Section 63 BSA 2023 certified court-admissible PDF dossier."
+        }
+      ],
+      "speaker_notes": "We built Trinetra around a 4-stage pipeline. It can ingest live emails via IMAP or analyst uploads, seal the raw bytes cryptographically, analyze them across three specialized layers, correlate them via a Neo4j knowledge graph, and produce a court-admissible legal dossier."
+    },
+    {
+      "slide_number": 4,
+      "slide_type": "Technical Architecture",
+      "title": "System Technical Architecture",
+      "subtitle": "Modular, Production-Ready Microservices Pipeline",
+      "diagram_reference": "sentinel_architecture_clean_1789568556263.jpg",
+      "stages_summary": [
+        "1. Ingestion: .eml / .msg / IMAP → SHA-256 Sealing → PII Masker → RFC 5322 MIME Parser",
+        "2. Risk Fusion: L1 Deterministic (30%) + L2 GeoIP/ThreatIntel (40%) + L3 AI Reasoning (30%) + Bonuses",
+        "3. Graph Intel: IOC Knowledge Graph → Cross-Case Correlation → Neo4j Clustering → Attribution Engine",
+        "4. Output: SQLite/PostgreSQL → React 19 Dashboard (Leaflet Map + Relay Trace) → WeasyPrint PDF"
+      ],
+      "speaker_notes": "This is our complete architectural workflow. The data flows sequentially from intake to cryptographic sealing, through our 3-layer fusion engine, enriches into Neo4j for campaign attribution, and renders on our React 19 dashboard with complete forensic reporting."
+    },
+    {
+      "slide_number": 5,
+      "slide_type": "Original Message Access & Ingestion",
+      "title": "Stage 1: Ingestion & Original Message Access",
+      "subtitle": "How Trinetra Inspects Raw Email Payloads Safely",
+      "bullet_points": [
+        "IMAP Live Monitoring: Built-in daemon polls mailbox folders (INBOX), automatically analyzing unseen emails in real time.",
+        "Multi-Format Parser: Seamlessly parses raw RFC 822 MIME, Outlook .msg (via extract-msg), and .eml byte streams.",
+        "Full Content Extraction: Extracts raw headers, plain text, HTML structure, embedded URLs, and binary attachments.",
+        "Pre-Sanitization Evidence Sealing: Computes SHA-256 hash at millisecond zero, preserving an unalterable digital footprint.",
+        "Dual-Role RBAC (Analyst vs Investigator): Analyst sees PII-masked content for privacy; authenticated LEA officers access the raw original email."
+      ],
+      "speaker_notes": "A critical capability of Trinetra is accessing the original message. Via our IMAP monitor or file upload, we extract the complete raw email—headers, body text, HTML, and attachments. We hash the raw bytes immediately for court evidence, mask sensitive PII for analysts, and grant full raw access only to authorized investigators."
+    },
+    {
+      "slide_number": 6,
+      "slide_type": "Layer 1: Structural Eye",
+      "title": "Layer 1: Deterministic Header Forensics",
+      "subtitle": "Rigorous Protocol Verification (Weight: 30%)",
+      "bullet_points": [
+        "Chronological Relay Path Reconstruction: Parses Received headers bottom-up to trace packet transit across all MTAs.",
+        "Hop 0 Origin Extraction: Isolates the earliest reliable public IP logged by a trusted boundary gateway, filtering private RFC 1918 subnets.",
+        "Relay Anomaly & Timestamp Drift: Detects clock skews, negative transit latencies, and forged intermediate headers.",
+        "Authentication Triad Validation: Verifies SPF DNS records, cryptographic DKIM signatures, and DMARC alignment policies.",
+        "Sender / Return-Path Mismatch: Detects divergence between envelope Return-Path, header From, and Reply-To addresses."
+      ],
+      "key_takeaway": "Mathematical certainty: Attackers can forge headers they inject, but cannot forge the TCP connection logged by our receiving MTA.",
+      "speaker_notes": "Layer 1 is our Structural Eye. It evaluates mathematical and cryptographic protocol facts. By parsing Received headers chronologically, we identify forged hops, detect relay anomalies, and verify SPF, DKIM, and DMARC alignment."
+    },
+    {
+      "slide_number": 7,
+      "slide_type": "Layer 2: Origin Eye",
+      "title": "Layer 2: Local & External Threat Intelligence",
+      "subtitle": "GeoLocation, Infrastructure Profiling & BGP Routing (Weight: 40%)",
+      "bullet_points": [
+        "City-Precision Geolocation: MaxMind GeoIP2 Enterprise offline database resolves country, city, and GPS coordinates.",
+        "Team Cymru BGP & ASN Profiling: Identifies the Autonomous System Number and upstream transit telecommunications provider.",
+        "Anonymization & Tor Detection: Cross-references origin IPs against Tor exit nodes, commercial VPN egresses, and open relays.",
+        "VirusTotal v3 Integration: Real-time multi-engine reputation scanning of extracted URLs and attachment SHA-256 hashes.",
+        "Lookalike & Punycode Engine: Levenshtein distance scoring and Unicode IDN decoding expose typosquatted domains (e.g., Cyrillic 'о')."
+      ],
+      "scoring_highlight": "Includes Anonymity Bonus (+5) for Tor/VPN and Attachment Bonus (+10) for malicious payloads.",
+      "speaker_notes": "Layer 2 is our Origin Eye carrying 40% weight. We determine where the email physically originated. If an invoice claims to come from an Indian vendor but its Hop 0 origin resolves to a bulletproof server in Bucharest or a Tor exit node, Layer 2 flags it immediately."
+    },
+    {
+      "slide_number": 8,
+      "slide_type": "Layer 3: Semantic Eye",
+      "title": "Layer 3: AI Forensic Reasoning & NLP",
+      "subtitle": "Gemini 2.5 Flash Intent Analysis with Adversarial Shielding (Weight: 30%)",
+      "bullet_points": [
+        "Contextual Intent Understanding: Gemini 2.5 Flash analyzes linguistic subtleties, coercive urgency, and social engineering.",
+        "Business Email Compromise (BEC): Specialized in detecting payment diversion, vendor bank change fraud, and payroll re-routing.",
+        "Executive Impersonation: Flags display-name spoofing mimicking C-suite executives and key decision makers.",
+        "Prompt Injection Protection: Sanitizes and wraps email content in strict delimiters, preventing adversarial prompt injection attacks.",
+        "Deterministic Synthesis Fallback: Guaranteed offline rule-based scoring activates automatically if cloud APIs are unreachable."
+      ],
+      "speaker_notes": "Layer 3 reads what the victim reads. Using Gemini 2.5 Flash, it understands semantic intent to catch zero-day BEC attacks that contain no links or attachments. Crucially, we implemented Prompt Injection Protection so malicious emails cannot hijack our AI."
+    },
+    {
+      "slide_number": 9,
+      "slide_type": "Graph & Campaign Intelligence",
+      "title": "Stage 3: Graph Intelligence & Threat Attribution",
+      "subtitle": "Uncovering Cybercrime Syndicates Using Neo4j",
+      "bullet_points": [
+        "IOC Knowledge Graph: Connects Case IDs, Sender Addresses, Domains, Origin IPs, Hashes, and Server Timezones.",
+        "Cross-Case Correlation: Automatically links separate phishing incidents targeting different departments or organizations.",
+        "Neo4j Campaign Clustering: Louvain community detection algorithm clusters interconnected IOCs into unified threat campaigns.",
+        "Cluster Confidence Scoring: Evaluates the density of shared infrastructure to output attribution confidence (0-100%).",
+        "Strategic Cyber Defense: Enables law enforcement to target the criminal infrastructure behind multiple attacks rather than isolated emails."
+      ],
+      "speaker_notes": "Attackers never launch just one email. In Stage 3, our Neo4j knowledge graph correlates shared indicators across cases. If three employees receive different emails that share the same bulletproof ASN and domain registrar, Trinetra clusters them into a single organized campaign."
+    },
+    {
+      "slide_number": 10,
+      "slide_type": "SOC Dashboard & Forensics",
+      "title": "Stage 4: React 19 Dashboard & Legal Dossier",
+      "subtitle": "Interactive Analyst Interface & Court-Admissible Reporting",
+      "dashboard_features": [
+        {"name": "Leaflet GeoMap", "desc": "Visualizes global hop-by-hop packet routing from origin city to destination mail server."},
+        {"name": "Relay Trace Timeline", "desc": "Interactive step-by-step breakdown of every MTA hop with timestamp latency deltas."},
+        {"name": "Dynamic Evidence Cards", "desc": "Clear cards for SPF/DKIM/DMARC status, GeoIP metadata, VirusTotal hits, and AI intent."},
+        {"name": "WeasyPrint PDF Dossier", "desc": "One-click generation of court-admissible forensic PDF reports with embedded SHA-256 evidence hashes."}
+      ],
+      "speaker_notes": "Stage 4 provides our React 19 dashboard. Analysts can visually inspect the packet journey on a Leaflet map, examine relay hop timings, review AI verdicts, and download a court-admissible PDF forensic dossier with a single click."
+    },
+    {
+      "slide_number": 11,
+      "slide_type": "Legal & Evidentiary Standards",
+      "title": "Legal, Privacy & Chain-of-Custody Compliance",
+      "subtitle": "Engineered for Section 63 BSA 2023 & DPDP Act 2023",
+      "compliance_matrix": [
+        {
+          "act": "Section 63 Bharatiya Sakshya Adhiniyam, 2023",
+          "mandate": "Admissibility of electronic records requires proof of source integrity and unbroken custody",
+          "trinetra_solution": "SHA-256 hash sealing at intake + immutable audit logging + dynamic verification endpoint (/cases/{id}/verify)"
+        },
+        {
+          "act": "Digital Personal Data Protection (DPDP) Act, 2023",
+          "mandate": "Protection of personal data and minimization of sensitive information exposure",
+          "trinetra_solution": "Privacy Sandbox PII Masker automatically redacting Aadhaar, PAN, phone numbers, and banking details"
+        },
+        {
+          "act": "Role-Based Access Control (RBAC)",
+          "mandate": "Strict separation between operational analysis and evidentiary investigation",
+          "trinetra_solution": "Analyst role accesses masked data; Investigator/LEA role authenticated via API key accesses full raw message"
+        }
+      ],
+      "speaker_notes": "Evidence is useless if dismissed in court. Trinetra is built specifically for Section 63 of Bharatiya Sakshya Adhiniyam 2023 (formerly Section 65B of the Indian Evidence Act). We seal SHA-256 hashes at intake and enforce DPDP-compliant PII masking with RBAC access."
+    },
+    {
+      "slide_number": 12,
+      "slide_type": "Conclusion & Impact",
+      "title": "Impact, Feasibility & Project Roadmap",
+      "subtitle": "Transforming Cyber Defense and Criminal Investigation in India",
+      "key_impacts": [
+        "⏱️ Reduces manual email forensic tracing from 72 hours to under 3 seconds.",
+        "🔍 Provides Law Enforcement Agencies with immediate infrastructure attribution and campaign clustering.",
+        "⚖️ Delivers court-certified evidence ready for criminal prosecution under Indian law.",
+        "🇮🇳 Completely indigenous, open-source architecture deployable on-premises, air-gapped, or on GovCloud India."
+      ],
+      "roadmap": "Phase 1: Working Prototype (Completed) | Phase 2: NCRP & CERT-In API Integration | Phase 3: Pan-India Multi-Tenant Deployment",
+      "closing_punchline": "Trinetra doesn't just protect the enterprise inbox—it unmasks the adversary and empowers the judicial process.",
+      "speaker_notes": "To conclude, Trinetra bridges the vital gap between automated email defense and criminal forensic investigation. We have a working prototype ready for live demonstration today. Thank you!"
+    }
+  ],
+  "jury_qa_master_defense": [
+    {
+      "question": "Can Trinetra access and inspect the actual original message of an email?",
+      "technical_defense": "Yes. Trinetra operates in two modes: manual file upload (.eml, .msg, raw text) and live IMAP mailbox monitoring. Through our IMAP daemon (app/track_b/imap_ingestion.py), Trinetra connects directly to authorized mailboxes, retrieves the raw RFC 822 byte stream containing the complete original headers, plain text, HTML body, and binary attachments. We compute a SHA-256 hash immediately for chain-of-custody, apply PII masking for operational analysts, and preserve the raw original message for authorized LEA investigators via our role-based API."
+    },
+    {
+      "question": "Attackers can forge email headers easily. How does your parser find the real originating IP?",
+      "technical_defense": "Attackers can only forge headers they inject before transmission. Once the email reaches our organization's boundary Mail Transfer Agent, that MTA records the actual TCP connection IP in a new Received header. Our algorithm parses the Received chain chronologically bottom-up, filters RFC 1918 private subnets, verifies timestamp monotonicity to detect clock skew or fake hops, and extracts Hop 0—the earliest verifiable public IP recorded by trusted infrastructure."
+    },
+    {
+      "question": "Why use a Three-Layer Risk Fusion engine instead of just relying on an LLM?",
+      "technical_defense": "LLMs alone are prone to hallucination, latency, and adversarial prompt injection. Our Trinetra engine uses a balanced 30-40-30 weighting: Layer 1 provides deterministic cryptographic truth (SPF/DKIM/DMARC); Layer 2 provides objective infrastructure facts (GeoIP, BGP, Tor/VPN lists, VirusTotal); and Layer 3 leverages Gemini 2.5 Flash for nuanced semantic reasoning. Furthermore, we implemented Prompt Injection Protection and a deterministic offline fallback to guarantee reliability."
+    },
+    {
+      "question": "How does Trinetra comply with Section 63 of Bharatiya Sakshya Adhiniyam, 2023?",
+      "technical_defense": "Under Section 63 of BSA 2023 (formerly Section 65B of the Indian Evidence Act), electronic evidence requires proof of source integrity and unbroken custody. Trinetra computes a SHA-256 hash at the instant of ingestion, records an append-only audit event log, stores raw evidence separately from sanitized views, and features an automated verification endpoint (/cases/{id}/verify) that recalculates hashes on demand to prove zero tampering."
+    },
+    {
+      "question": "If the attacker routes traffic through Tor or a commercial VPN, does geolocation become useless?",
+      "technical_defense": "No. When an origin IP matches a Tor exit node or VPN egress point, Layer 2 flags it and applies an Anonymity Bonus to elevate the threat score. More importantly, our Neo4j IOC Knowledge Graph correlates secondary indicators—such as domain registrars, nameservers, SSL certificate serials, attachment hashes, and server timezones—linking the anonymized attack to past campaigns where the threat actor may have exposed clean infrastructure."
+    }
+  ]
+}
