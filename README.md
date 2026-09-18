@@ -80,6 +80,21 @@ Certified Forensic Court PDF]
 
 ---
 
+
+---
+
+## 🖥️ Prototype Interface & Visual Walkthrough
+
+| Executive Investigation Workspace | Threat Intelligence & Geolocation Map |
+| :---: | :---: |
+| ![Executive Investigation Workspace](docs/images/soc_dashboard.png) | ![System Architecture](docs/images/architecture_diagram.jpg) |
+
+| Case History & Database Archive | Forensic Ingestion & 1-Click Launchpad |
+| :---: | :---: |
+| ![Case History](docs/images/case_history.png) | ![Ingestion Launchpad](docs/images/ingest_workspace.png) |
+
+---
+
 ## ⚡ Quick Demonstration Presets (Available in UI)
 For live evaluations, TRINETRA provides **1-click instant attack scenarios** directly in the dashboard:
 1. 🔴 **Executive BEC Fraud**: Spoofed CEO wire transfer with forged `Return-Path`, `Reply-To` mismatch, shortened URLs, and high financial urgency signals.
@@ -246,6 +261,15 @@ All electronic evidence processed by TRINETRA conforms to **Section 63 of the Bh
 3. **Court-Ready PDF Dossier**: Automatically generates an examiner-signed certificate specifying device identifiers, hash seals, forensic findings, and evidence timeline.
 
 ---
+
+
+---
+
+## 📚 Technical Documentation & References
+- 🏛️ **[Section 63 BSA 2023 Legal Compliance Guide](docs/LEGAL_COMPLIANCE_BSA_2023.md)** — Detailed evidentiary admissibility, SHA-256 sealing, and DPDP Act compliance.
+- 🔌 **[REST API Reference](docs/API_DOCUMENTATION.md)** — Complete FastAPI endpoint specifications with request/response schemas.
+- 🗄️ **[Database Architecture Guide](database/README.md)** — Relational and graph persistence models.
+- ⚖️ **[License](LICENSE)** — Open source under the MIT License.
 
 ## 👥 Smart India Hackathon 2026 Team
 - **Project**: TRINETRA (त्रिनेत्र)
