@@ -295,4 +295,4 @@ All electronic evidence processed by TRINETRA conforms to **Section 63 of the Bh
 | 🛡️ **Member** | **Lisa Kamle** | — | CSE (AI & ML) | 2nd Year | `27830825004` |
 
 ---
-*Built with ❤️ for the Smart India Hackathon 2026.*
+*Built for the Smart India Hackathon 2026.*
