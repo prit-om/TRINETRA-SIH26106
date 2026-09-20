@@ -5,12 +5,12 @@
     "full_title": "Trinetra: AI-Powered Email Threat Detection, GeoLocation & Forensic Intelligence Platform",
     "team_name": "Coordination Zero",
     "team_members": [
-      { "role": "Team Leader", "name": "Pritam Maity", "department": "CSE", "year": "3rd Year", "roll_no": "27800124062" },
-      { "role": "Member", "name": "Sneha Kumari Mahato", "department": "CSE (AI & ML)", "year": "3rd Year", "roll_no": "27830824047" },
-      { "role": "Member", "name": "Barsa Sen", "department": "CSE", "year": "3rd Year", "roll_no": "27800124093" },
-      { "role": "Member", "name": "Pabitra Ghosh", "department": "CSE (AI & ML)", "year": "3rd Year", "roll_no": "27830824042" },
-      { "role": "Member", "name": "Pavel Jana", "department": "CSE", "year": "3rd Year", "roll_no": "27800124021" },
-      { "role": "Member", "name": "Lisa Kamle", "department": "CSE (AI & ML)", "year": "2nd Year", "roll_no": "27830825004" }
+      { "role": "Team Leader", "name": "Pritam Maity", "github": "prit-om", "department": "CSE", "year": "3rd Year", "roll_no": "27800124062" },
+      { "role": "Member", "name": "Sneha Kumari Mahato", "github": "TheShadowRoot", "department": "CSE (AI & ML)", "year": "3rd Year", "roll_no": "27830824047" },
+      { "role": "Member", "name": "Barsa Sen", "github": "BarsaBytes", "department": "CSE", "year": "3rd Year", "roll_no": "27800124093" },
+      { "role": "Member", "name": "Pabitra Ghosh", "github": null, "department": "CSE (AI & ML)", "year": "3rd Year", "roll_no": "27830824042" },
+      { "role": "Member", "name": "Pavel Jana", "github": null, "department": "CSE", "year": "3rd Year", "roll_no": "27800124021" },
+      { "role": "Member", "name": "Lisa Kamle", "github": null, "department": "CSE (AI & ML)", "year": "2nd Year", "roll_no": "27830825004" }
     ],
     "problem_statement_id": "SIH26106",
     "theme": "Blockchain & Cybersecurity",
