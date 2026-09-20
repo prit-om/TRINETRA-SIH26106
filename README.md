@@ -12,6 +12,12 @@
 
 > **An AI-powered email threat detection, geolocation, and forensic intelligence platform that combines NLP, email header forensics, IP intelligence, and graph correlation to detect fraudulent emails, trace transmission paths, and investigate probable sender origin.**
 
+> 📑 **SIH 2026 Evaluator Quick Links**:
+> - 📄 **[Read Full SIH Technical Project & Prototype Report (Markdown)](docs/PROJECT_REPORT.md)**
+> - 📥 **[Download Official Project Report (PDF)](docs/TRINETRA_SIH26106_Project_Report.pdf)**
+> - 🏛️ **[Section 63 BSA 2023 Compliance Guide](docs/LEGAL_COMPLIANCE_BSA_2023.md)**
+> - 🔌 **[REST API Specifications](docs/API_DOCUMENTATION.md)**
+
 ---
 
 ## 📌 Problem Statement Overview (SIH26106)
@@ -35,6 +41,8 @@
 ---
 
 ## 🏗️ System Architecture
+
+![TRINETRA System Architecture](docs/images/system_architecture.png)
 
 ```mermaid
 flowchart TD
@@ -98,9 +106,13 @@ Certified Forensic Court PDF]
 | :---: | :---: |
 | ![URL & Attachment Findings](docs/images/url_attachment_findings.png) | ![Case History & Database Archive](docs/images/case_history.png) |
 
-| 7. Section 63 BSA 2023 Certified Court-Admissible Forensic Dossier |
+| 7. Section 63 BSA 2023 Certified Court Dossier | 8. Live Mailbox Monitor (Automated IMAP Ingestion) |
+| :---: | :---: |
+| ![Section 63 BSA 2023 Certified Forensic Dossier](docs/images/court_admissible_report.png) | ![Live Mailbox Monitor](docs/images/live_monitor.png) |
+
+| 9. Instant 1-Click Forensic Demonstration Presets (SIH Jury Launchpad) |
 | :---: |
-| ![Section 63 BSA 2023 Certified Forensic Dossier](docs/images/court_admissible_report.png) |
+| ![Instant Presets](docs/images/instant_presets.png) |
 
 ---
 
@@ -275,6 +287,8 @@ All electronic evidence processed by TRINETRA conforms to **Section 63 of the Bh
 ---
 
 ## 📚 Technical Documentation & References
+- 📄 **[Comprehensive SIH Technical Project & Prototype Report (Markdown)](docs/PROJECT_REPORT.md)** — Complete master technical documentation covering research foundation, 3-layer risk fusion mathematics, and verification metrics.
+- 📥 **[Download Official Project Report (PDF)](docs/TRINETRA_SIH26106_Project_Report.pdf)** — Formatted, publication-ready PDF submission report.
 - 🏛️ **[Section 63 BSA 2023 Legal Compliance Guide](docs/LEGAL_COMPLIANCE_BSA_2023.md)** — Detailed evidentiary admissibility, SHA-256 sealing, and DPDP Act compliance.
 - 🔌 **[REST API Reference](docs/API_DOCUMENTATION.md)** — Complete FastAPI endpoint specifications with request/response schemas.
 - 🗄️ **[Database Architecture Guide](database/README.md)** — Relational and graph persistence models.
