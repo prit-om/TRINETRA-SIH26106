@@ -2,6 +2,7 @@
 ### AI-Powered Email Threat Detection, GeoLocation & Forensic Intelligence Platform
 
 [![Smart India Hackathon 2026](https://img.shields.io/badge/SIH-2026-blue.svg?style=for-the-badge&logo=gov.in)](https://sih.gov.in/)
+[![Team](https://img.shields.io/badge/Team-Coordination%20Zero-red.svg?style=for-the-badge)](https://sih.gov.in/)
 [![Problem Statement](https://img.shields.io/badge/Problem%20Statement-SIH26106-orange.svg?style=for-the-badge)](https://sih.gov.in/)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-brightgreen.svg?style=for-the-badge&logo=python)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
@@ -272,6 +273,7 @@ All electronic evidence processed by TRINETRA conforms to **Section 63 of the Bh
 - ⚖️ **[License](LICENSE)** — Open source under the MIT License.
 
 ## 👥 Smart India Hackathon 2026 Team
+- **Team Name**: Coordination Zero
 - **Project**: TRINETRA (त्रिनेत्र)
 - **Problem Statement**: AI-Powered Email Threat Detection, GeoLocation and Forensic Intelligence Platform (SIH26106)
 - **Category**: Cybersecurity, Forensics & Law Enforcement
