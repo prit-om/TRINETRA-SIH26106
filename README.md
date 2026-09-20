@@ -86,13 +86,17 @@ Certified Forensic Court PDF]
 
 ## 🖥️ Prototype Interface & Visual Walkthrough
 
-| Executive Investigation Workspace | Forensic Ingestion & 1-Click Launchpad |
+| 1. Active Investigation Workspace & Threat Scoring | 2. 3-Layer Evidence Fusion & AI Forensic Reasoning |
 | :---: | :---: |
-| ![Executive Investigation Workspace](docs/images/soc_dashboard.png) | ![Ingestion Launchpad](docs/images/ingest_workspace.png) |
+| ![Active Investigation Workspace](docs/images/workspace_overview.png) | ![3-Layer Evidence Fusion](docs/images/evidence_package_fusion.png) |
 
-| Case History & Database Archive |
-| :---: |
-| ![Case History](docs/images/case_history.png) |
+| 3. Multi-Script NLP Threat Signals & Attribution | 4. Interactive IOC Campaign Knowledge Graph |
+| :---: | :---: |
+| ![NLP Behavioral Analysis & Attribution](docs/images/nlp_behavioral_attribution.png) | ![IOC Campaign Knowledge Graph](docs/images/graph_intelligence.png) |
+
+| 5. Malicious URL Unmasking & Attachment Forensics | 6. Forensic Case History & Database Archive |
+| :---: | :---: |
+| ![URL & Attachment Findings](docs/images/url_attachment_findings.png) | ![Case History & Database Archive](docs/images/case_history.png) |
 
 ---
 
