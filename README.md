@@ -86,13 +86,13 @@ Certified Forensic Court PDF]
 
 ## 🖥️ Prototype Interface & Visual Walkthrough
 
-| Executive Investigation Workspace | Threat Intelligence & Geolocation Map |
+| Executive Investigation Workspace | Forensic Ingestion & 1-Click Launchpad |
 | :---: | :---: |
-| ![Executive Investigation Workspace](docs/images/soc_dashboard.png) | ![System Architecture](docs/images/architecture_diagram.jpg) |
+| ![Executive Investigation Workspace](docs/images/soc_dashboard.png) | ![Ingestion Launchpad](docs/images/ingest_workspace.png) |
 
-| Case History & Database Archive | Forensic Ingestion & 1-Click Launchpad |
-| :---: | :---: |
-| ![Case History](docs/images/case_history.png) | ![Ingestion Launchpad](docs/images/ingest_workspace.png) |
+| Case History & Database Archive |
+| :---: |
+| ![Case History](docs/images/case_history.png) |
 
 ---
 
