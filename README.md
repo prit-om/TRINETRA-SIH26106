@@ -272,11 +272,19 @@ All electronic evidence processed by TRINETRA conforms to **Section 63 of the Bh
 - 🗄️ **[Database Architecture Guide](database/README.md)** — Relational and graph persistence models.
 - ⚖️ **[License](LICENSE)** — Open source under the MIT License.
 
-## 👥 Smart India Hackathon 2026 Team
-- **Team Name**: Coordination Zero
-- **Project**: TRINETRA (त्रिनेत्र)
-- **Problem Statement**: AI-Powered Email Threat Detection, GeoLocation and Forensic Intelligence Platform (SIH26106)
-- **Category**: Cybersecurity, Forensics & Law Enforcement
+## 👥 Smart India Hackathon 2026 — Team Coordination Zero
+
+- **Problem Statement (SIH26106)**: AI-Powered Email Threat Detection, GeoLocation and Forensic Intelligence Platform
+- **Category / Theme**: Cybersecurity & Digital Forensics / Blockchain & Cybersecurity
+
+| Role | Name | Department | Year | University Roll No. |
+| :--- | :--- | :--- | :---: | :---: |
+| 👑 **Team Leader** | **Pritam Maity** | Computer Science & Engineering (CSE) | 3rd Year | `27800124062` |
+| 🛡️ **Member** | **Sneha Kumari Mahato** | CSE (AI & ML) | 3rd Year | `27830824047` |
+| 🛡️ **Member** | **Barsa Sen** | Computer Science & Engineering (CSE) | 3rd Year | `27800124093` |
+| 🛡️ **Member** | **Pabitra Ghosh** | CSE (AI & ML) | 3rd Year | `27830824042` |
+| 🛡️ **Member** | **Pavel Jana** | Computer Science & Engineering (CSE) | 3rd Year | `27800124021` |
+| 🛡️ **Member** | **Lisa Kamle** | CSE (AI & ML) | 2nd Year | `27830825004` |
 
 ---
 *Built with ❤️ for the Smart India Hackathon 2026.*
