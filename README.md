@@ -113,8 +113,8 @@ For live evaluations, TRINETRA provides **1-click instant attack scenarios** dir
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/<your-username>/TRINETRA.git
-cd TRINETRA
+git clone https://github.com/prit-om/TRINETRA-SIH26106.git
+cd TRINETRA-SIH26106
 ```
 
 ### 2. Backend Setup
