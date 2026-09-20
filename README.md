@@ -10,7 +10,7 @@
 [![Legal Admissibility](https://img.shields.io/badge/Compliance-Section%2063%20BSA%202023-purple.svg?style=for-the-badge)](https://indiacode.nic.in)
 [![Tests Passing](https://img.shields.io/badge/Tests-100%25%20Passing-success.svg?style=for-the-badge)](https://pytest.org)
 
-> **"See Beyond the Email"** — An enterprise-grade, court-admissible cyber defense platform designed for Law Enforcement Agencies (LEAs), enterprise Security Operations Centers (SOCs), and digital forensic examiners to detect advanced Business Email Compromise (BEC), multi-lingual phishing, domain spoofing, and origin infrastructure.
+> **An AI-powered email threat detection, geolocation, and forensic intelligence platform that combines NLP, email header forensics, IP intelligence, and graph correlation to detect fraudulent emails, trace transmission paths, and investigate probable sender origin.**
 
 ---
 
