@@ -23,3 +23,9 @@ Under Section 63(4) of the BSA 2023, an electronic record must be accompanied by
 2. **Cryptographic Hashes**: SHA-256 evidence seal, Byte length, and MIME integrity hash.
 3. **Forensic Examiner Declaration**: Standard statutory wording affirming lawful custody and uncompromised operating condition.
 4. **Relay Hop Evidence Table**: Step-by-step RFC 5322 received headers with timestamps and IP addresses.
+
+---
+
+### Sample Generated Section 63 BSA 2023 Court Report
+![Section 63 BSA 2023 Forensic Report](images/court_admissible_report.png)
+

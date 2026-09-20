@@ -98,6 +98,10 @@ Certified Forensic Court PDF]
 | :---: | :---: |
 | ![URL & Attachment Findings](docs/images/url_attachment_findings.png) | ![Case History & Database Archive](docs/images/case_history.png) |
 
+| 7. Section 63 BSA 2023 Certified Court-Admissible Forensic Dossier |
+| :---: |
+| ![Section 63 BSA 2023 Certified Forensic Dossier](docs/images/court_admissible_report.png) |
+
 ---
 
 ## ⚡ Quick Demonstration Presets (Available in UI)
