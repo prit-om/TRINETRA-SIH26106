@@ -249,7 +249,7 @@ def _footer(canvas, doc) -> None:
     canvas.drawCentredString(
         A4[0] / 2,
         9 * mm,
-        "TRINETRA AI | CONFIDENTIAL FORENSIC TECHNICAL REPORT",
+        "TRINETRA | CONFIDENTIAL FORENSIC TECHNICAL REPORT",
     )
 
     canvas.drawRightString(
@@ -419,7 +419,7 @@ def generate_pdf_report(
         topMargin=14 * mm,
         bottomMargin=16 * mm,
         title=f"Trinetra Forensic Report - {case_id}",
-        author="Trinetra AI",
+        author="TRINETRA",
         subject="Email forensic technical examination report",
     )
 
@@ -447,7 +447,7 @@ def generate_pdf_report(
     # COVER / CASE IDENTIFICATION
     # ------------------------------------------------------------------
 
-    story.append(Paragraph("TRINETRA AI", styles["title"]))
+    story.append(Paragraph("TRINETRA", styles["title"]))
     story.append(
         Paragraph(
             "Email Threat Detection and Forensic Intelligence",
@@ -475,7 +475,7 @@ def generate_pdf_report(
             [
                 _paragraph("Prepared By", styles["table_header"]),
                 _paragraph(
-                    "Trinetra AI forensic analysis system",
+                    "TRINETRA forensic analysis system",
                     styles["body"],
                 ),
             ],
@@ -865,7 +865,7 @@ def generate_pdf_report(
             or data.get("email_sha256")
             or "Not supplied"
         ),
-        "System used for processing": "Trinetra AI forensic analysis system",
+        "System used for processing": "TRINETRA forensic analysis system",
         "Purpose of processing": (
             "Email forensic examination, threat detection, correlation "
             "and generation of derived technical findings."

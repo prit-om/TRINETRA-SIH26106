@@ -1,4 +1,4 @@
-# Trinetra AI — Database
+# TRINETRA — Database
 
 AI-Powered Email Threat Detection, GeoLocation and Forensic Intelligence Platform (SIH26106)
 
