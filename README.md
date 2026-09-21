@@ -110,18 +110,6 @@ Certified Forensic Court PDF]
 | :---: | :---: |
 | ![Section 63 BSA 2023 Certified Forensic Dossier](docs/images/court_admissible_report.png) | ![Live Mailbox Monitor](docs/images/live_monitor.png) |
 
-| 9. Instant 1-Click Forensic Demonstration Presets (SIH Jury Launchpad) |
-| :---: |
-| ![Instant Presets](docs/images/instant_presets.png) |
-
----
-
-## ⚡ Quick Demonstration Presets (Available in UI)
-For live evaluations, TRINETRA provides **1-click instant attack scenarios** directly in the dashboard:
-1. 🔴 **Executive BEC Fraud**: Spoofed CEO wire transfer with forged `Return-Path`, `Reply-To` mismatch, shortened URLs, and high financial urgency signals.
-2. 🟡 **Bank KYC Phishing**: Targeted Indian banking impersonation alerting suspension of accounts with malicious portal redirection.
-3. 🟢 **Clean Corporate Notice**: Valid internal HR all-hands meeting with matching SPF, DKIM, and legitimate corporate headers.
-
 ---
 
 ## 🚀 Quick Start Guide

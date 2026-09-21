@@ -33,75 +33,10 @@ import GraphIntelCard from './GraphIntelCard';
 import AttributionEngineCard from './AttributionEngineCard';
 import DomainIntelligenceCard from './DomainIntelligenceCard';
 
-const DEMO_PRESETS = [
-  {
-    id: 'bec',
-    name: 'Executive BEC Fraud',
-    desc: 'Spoofed CEO wire transfer with reply-to mismatch & malicious URLs',
-    badge: 'Critical',
-    badgeColor: 'bg-rose-950',
-    data: `From: John Smith <ceo@company-example.com>
-Return-Path: <bounce@fakecompany.net>
-Reply-To: attacker@fakecompany.net
-Subject: Urgent Wire Transfer Needed
-Date: Mon, 14 Sep 2026 10:00:00 +0530
-Received: from attacker.example (185.220.101.5) by mail.company-example.com; Mon, 14 Sep 2026 10:00:00 +0530
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-
-Urgent wire transfer needed immediately. Please review http://bit.ly/xyz123 , http://hacker.co/hack12`
-  },
-  {
-    id: 'sbi',
-    name: 'Bank KYC Phishing',
-    desc: 'Indian banking credential harvest impersonation with fake portal',
-    badge: 'Phishing',
-    badgeColor: 'bg-amber-950',
-    data: `From: ABC Bank of India Alerts <service@abc-kyc-update.com>
-Return-Path: <no-reply@abc-kyc-update.com>
-Reply-To: support@abc-kyc-update.com
-Subject: Mandatory ABC PAN-Aadhaar KYC Verification
-Date: Tue, 15 Sep 2026 14:30:00 +0530
-Received: from mail.abc-kyc-update.com (198.51.100.20) by mx.target.in; Tue, 15 Sep 2026 14:30:00 +0530
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-
-Dear Customer,
-Your ABC bank account privileges will be suspended within 24 hours.
-Please complete your mandatory PAN-Aadhaar KYC link update immediately at:
-http://bca-portal-verify.in/kyc/update
-
-ABC Bank of India Security Division`
-  },
-  {
-    id: 'clean',
-    name: 'Clean Corporate Notice',
-    desc: 'Legitimate internal HR notice with matching Return-Path',
-    badge: 'Safe',
-    badgeColor: 'bg-emerald-950',
-    data: `From: HR Operations <hr@corporate-legit.com>
-Return-Path: <hr@corporate-legit.com>
-Reply-To: hr@corporate-legit.com
-Subject: Quarterly All-Hands Meeting Schedule
-Date: Wed, 16 Sep 2026 09:00:00 +0530
-Received: from mail.corporate-legit.com (192.0.2.10) by mail.target.in; Wed, 16 Sep 2026 09:00:00 +0530
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-
-Hello Team,
-Our quarterly company-wide review will be held tomorrow at 3:00 PM IST in Conference Room A.
-Attendance is optional for remote interns.
-Best regards,
-People & Culture Team`
-  }
-];
-
 export default function AnalysisView({ report, setActiveTab, backendHealthy, onSelectReport }) {
   const [activeSection, setActiveSection] = useState('overview');
   const [verifying, setVerifying] = useState(false);
   const [verifyResult, setVerifyResult] = useState(null);
-  const [demoLoading, setDemoLoading] = useState(false);
-  const [demoError, setDemoError] = useState('');
 
   const handleVerify = async () => {
     if (!report?.case_id) return;
@@ -118,24 +53,6 @@ export default function AnalysisView({ report, setActiveTab, backendHealthy, onS
     }
   };
 
-  const handleRunPreset = async (presetText) => {
-    setDemoLoading(true);
-    setDemoError('');
-    try {
-      const form = new FormData();
-      form.append('raw_text', presetText.trim());
-      const response = await apiFetch('/analyze', { method: 'POST', body: form });
-      const data = await response.json();
-      if (onSelectReport) {
-        onSelectReport(data);
-      }
-    } catch (err) {
-      setDemoError(err.message || 'Quick demo analysis failed.');
-    } finally {
-      setDemoLoading(false);
-    }
-  };
-
   if (!report) {
     return (
       <div className="tn-empty-workspace">
@@ -146,44 +63,17 @@ export default function AnalysisView({ report, setActiveTab, backendHealthy, onS
           <span className="tn-kicker">FORENSIC CASE WORKSPACE</span>
           <h2>No Forensic Case Analyzed Yet</h2>
           <p>
-            Upload an email artifact (.eml, .msg, .txt) or click any preset attack scenario below to run a real-time investigation.
+            Upload an email artifact (.eml, .msg, .txt) or paste a raw RFC 5322 MIME stream in the Ingest &amp; Parser workspace to run real-time deep forensic analysis.
           </p>
 
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', marginTop: '16px' }}>
             <button
               type="button"
               className="tn-primary-button"
               onClick={() => setActiveTab('parser')}
             >
-              <FileSearch /> Open Ingest & Parser
+              <FileSearch /> Open Ingest &amp; Parser
             </button>
-          </div>
-
-          {demoError && (
-            <div className="tn-alert tn-alert-error" style={{ marginTop: '16px' }}>
-              <AlertCircle /> <span>{demoError}</span>
-            </div>
-          )}
-
-          <div className="tn-empty-presets">
-            <div className="tn-preset-label">⚡ Instant 1-Click Forensic Demonstrations (SIH Jury Presentation)</div>
-            <div className="tn-preset-row">
-              {DEMO_PRESETS.map((preset) => (
-                <button
-                  key={preset.id}
-                  type="button"
-                  className="tn-preset-chip"
-                  onClick={() => handleRunPreset(preset.data)}
-                  disabled={demoLoading}
-                >
-                  <span className={`tn-badge ${preset.badgeColor}`} style={{ padding: '2px 8px', fontSize: '11px' }}>
-                    {preset.badge}
-                  </span>
-                  <span>{preset.name}</span>
-                  {demoLoading && <RefreshCw className="tn-spin" style={{ width: 14, height: 14 }} />}
-                </button>
-              ))}
-            </div>
           </div>
         </div>
       </div>

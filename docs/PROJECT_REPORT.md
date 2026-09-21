@@ -226,12 +226,6 @@ TRINETRA generates a legally structured **Forensic Technical Examination Report*
 
 ---
 
-### Figure 10: Instant 1-Click Forensic Demonstration Presets
-![Instant Presets](images/instant_presets.png)
-*Figure 10: 1-click pre-configured attack scenarios (Executive BEC, Bank KYC Phishing, Clean Notice) for live evaluation demonstrations.*
-
----
-
 ## 8. Verification & Test Metrics
 
 TRINETRA has been rigorously tested using automated unit, integration, and security test suites:
