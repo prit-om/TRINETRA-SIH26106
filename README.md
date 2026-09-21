@@ -42,9 +42,43 @@
 
 ## 🏗️ System Architecture
 
+### 📐 Architectural Blueprint
 <p align="center">
-  <img src="docs/images/system_architecture.png" alt="TRINETRA System Architecture Blueprint" width="92%" />
+  <img src="docs/images/system_architecture.png" alt="TRINETRA System Architecture Blueprint" width="95%" />
 </p>
+
+### 🔄 End-to-End Forensic Processing Pipeline
+```mermaid
+flowchart TD
+    subgraph Ingestion ["1. INGESTION & PRE-PROCESSING"]
+        RAW["Raw EML / MSG / IMAP Stream"] --> MIME["RFC 5322 MIME Parser"]
+        MIME --> SEAL["SHA-256 Cryptographic Evidence Seal"]
+        SEAL --> PII["Indian PII Masking: Aadhaar & PAN"]
+    end
+
+    subgraph Fusion ["2. 3-LAYER RISK FUSION ENGINE"]
+        PII --> L1["Layer 1: Deterministic Engine<br/>• SPF / DKIM / DMARC Verification<br/>• Hop-0 Bottom-Up Origin Extraction<br/>• Malicious URL Unmasking & Cymru BGP"]
+        PII --> L2["Layer 2: Contextual Intelligence<br/>• MaxMind GeoLite2 City & ASN Geolocation<br/>• Tor Exit Node & VPN Anonymizer Tracing<br/>• Typosquatting / Punycode / Impersonation"]
+        PII --> L3["Layer 3: AI Forensic Reasoning<br/>• 6-Vector Behavioral Threat Scoring<br/>• Multi-Script Indic NLP Analysis<br/>• Prompt-Injection Defended LLM Synthesis"]
+        
+        L1 & L2 & L3 --> CORE["Risk Fusion Core Formula<br/>Score = min(100, L1×0.40 + L2×0.35 + L3×0.25 + Bonuses)"]
+    end
+
+    subgraph GraphLayer ["3. CAMPAIGN & GRAPH INTELLIGENCE"]
+        CORE --> GRAPH["IOC Knowledge Graph Engine"]
+        GRAPH --> NODES["Entity Nodes: Sender, IP, Domain, Hash"]
+        GRAPH --> CLUSTER["Threat Actor Clustering & Correlation"]
+        GRAPH -.-> NEO4J[("Neo4j Persistence / Graph DB")]
+    end
+
+    subgraph Delivery ["4. SOC ANALYST DASHBOARD & DELIVERY"]
+        CORE --> SOC["Interactive React 19 Dashboard"]
+        SOC --> MAP["Origin Leaflet GeoIP Map"]
+        SOC --> TIMELINE["Visual Relay Hop Timeline"]
+        SOC --> PDF["Automated Section 63 BSA 2023<br/>Certified Forensic Court PDF"]
+        SOC --> ALERTS["Real-Time IMAP Live Monitor"]
+    end
+```
 
 ---
 
