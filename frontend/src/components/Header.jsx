@@ -40,7 +40,7 @@ export default function Header({ activeTab, setActiveTab, onHealthChange }) {
         <div className="tn-brand-copy">
           <div className="tn-brand-name">TRINETRA</div>
           <div className="tn-brand-tagline">AI-Powered Email Threat Detection &amp; Forensic Intelligence Platform</div>
-          <div className="tn-api-chip"><span>API</span><code>{API_BASE_URL}</code></div>
+          <div className="tn-api-chip"><span>API</span><code>{API_BASE_URL || 'TRINETRA Engine (Active)'}</code></div>
         </div>
       </div>
 
