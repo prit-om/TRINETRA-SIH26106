@@ -42,73 +42,56 @@
 
 ## 🏗️ System Architecture
 
-![TRINETRA System Architecture](docs/images/system_architecture.png)
-
-```mermaid
-flowchart TD
-    subgraph Ingestion ["1. INGESTION & PRE-PROCESSING"]
-        RAW[Raw EML / MSG / IMAP Stream] --> MIME[RFC 5322 MIME Parser]
-        MIME --> SEAL[SHA-256 Cryptographic Evidence Seal]
-        SEAL --> PII[Indian PII Masking: Aadhaar & PAN]
-    end
-
-    subgraph Fusion ["2. 3-LAYER RISK FUSION ENGINE"]
-        PII --> L1[Layer 1: Deterministic Engine
-• SPF / DKIM / DMARC Verification
-• Hop-0 Bottom-Up Origin Extraction
-• Malicious URL Unmasking & Cymru BGP]
-        PII --> L2[Layer 2: Contextual Intelligence
-• MaxMind GeoLite2 City & ASN Geolocation
-• Tor Exit Node & VPN Anonymizer Tracing
-• Typosquatting / Punycode / Banking Impersonation]
-        PII --> L3[Layer 3: AI Forensic Reasoning
-• 6-Vector Behavioral Threat Scoring
-• Multi-Script Indic NLP Analysis
-• Prompt-Injection Defended LLM Synthesis]
-        
-        L1 & L2 & L3 --> CORE[Risk Fusion Core Formula
-Score = min 100, L1*0.40 + L2*0.35 + L3*0.25 + Bonuses]
-    end
-
-    subgraph GraphLayer ["3. CAMPAIGN & GRAPH INTELLIGENCE"]
-        CORE --> GRAPH[IOC Knowledge Graph Engine]
-        GRAPH --> NODES[Entity Nodes: Sender, IP, Domain, Hash]
-        GRAPH --> CLUSTER[Threat Actor Clustering & Correlation]
-        GRAPH -.-> NEO4J[(Neo4j Persistence / Fallback Graph)]
-    end
-
-    subgraph Delivery ["4. SOC ANALYST DASHBOARD & DELIVERY"]
-        CORE --> SOC[Interactive React 19 Dashboard]
-        SOC --> MAP[Origin Leaflet GeoIP Map]
-        SOC --> TIMELINE[Visual Relay Hop Timeline]
-        SOC --> PDF[Automated Section 63 BSA 2023
-Certified Forensic Court PDF]
-        SOC --> ALERTS[Real-Time IMAP Live Monitor]
-    end
-```
-
----
-
+<p align="center">
+  <img src="docs/images/system_architecture.png" alt="TRINETRA System Architecture Blueprint" width="92%" />
+</p>
 
 ---
 
 ## 🖥️ Prototype Interface & Visual Walkthrough
 
-| 1. Active Investigation Workspace & Threat Scoring | 2. 3-Layer Evidence Fusion & AI Forensic Reasoning |
-| :---: | :---: |
-| ![Active Investigation Workspace](docs/images/workspace_overview.png) | ![3-Layer Evidence Fusion](docs/images/evidence_package_fusion.png) |
-
-| 3. Multi-Script NLP Threat Signals & Attribution | 4. Interactive IOC Campaign Knowledge Graph |
-| :---: | :---: |
-| ![NLP Behavioral Analysis & Attribution](docs/images/nlp_behavioral_attribution.png) | ![IOC Campaign Knowledge Graph](docs/images/graph_intelligence.png) |
-
-| 5. Malicious URL Unmasking & Attachment Forensics | 6. Forensic Case History & Database Archive |
-| :---: | :---: |
-| ![URL & Attachment Findings](docs/images/url_attachment_findings.png) | ![Case History & Database Archive](docs/images/case_history.png) |
-
-| 7. Section 63 BSA 2023 Certified Court Dossier | 8. Live Mailbox Monitor (Automated IMAP Ingestion) |
-| :---: | :---: |
-| ![Section 63 BSA 2023 Certified Forensic Dossier](docs/images/court_admissible_report.png) | ![Live Mailbox Monitor](docs/images/live_monitor.png) |
+<table width="100%">
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <h4>1. Active Investigation Workspace &amp; Threat Scoring</h4>
+      <img src="docs/images/workspace_overview.png" alt="Active Investigation Workspace" width="100%" />
+    </td>
+    <td width="50%" align="center" valign="top">
+      <h4>2. 3-Layer Evidence Fusion &amp; AI Reasoning</h4>
+      <img src="docs/images/evidence_package_fusion.png" alt="3-Layer Evidence Fusion" width="100%" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <h4>3. Multi-Script NLP Signals &amp; Threat Attribution</h4>
+      <img src="docs/images/nlp_behavioral_attribution.png" alt="NLP Behavioral Analysis &amp; Attribution" width="100%" />
+    </td>
+    <td width="50%" align="center" valign="top">
+      <h4>4. Interactive IOC Campaign Knowledge Graph</h4>
+      <img src="docs/images/graph_intelligence.png" alt="IOC Campaign Knowledge Graph" width="100%" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <h4>5. Malicious URL Unmasking &amp; Attachment Forensics</h4>
+      <img src="docs/images/url_attachment_findings.png" alt="URL &amp; Attachment Findings" width="100%" />
+    </td>
+    <td width="50%" align="center" valign="top">
+      <h4>6. Forensic Case History &amp; Database Archive</h4>
+      <img src="docs/images/case_history.png" alt="Case History &amp; Database Archive" width="100%" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <h4>7. Section 63 BSA 2023 Certified Court Dossier</h4>
+      <img src="docs/images/court_admissible_report.png" alt="Section 63 BSA 2023 Certified Forensic Dossier" width="75%" />
+    </td>
+    <td width="50%" align="center" valign="top">
+      <h4>8. Live Mailbox Monitor (Automated IMAP Ingestion)</h4>
+      <img src="docs/images/live_monitor.png" alt="Live Mailbox Monitor" width="100%" />
+    </td>
+  </tr>
+</table>
 
 ---
 
