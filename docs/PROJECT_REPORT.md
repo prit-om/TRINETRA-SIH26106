@@ -1,7 +1,7 @@
 # 🛡️ TRINETRA (त्रिनेत्र) — SIH 2026 Comprehensive Technical Project & Prototype Report
 
 [![Smart India Hackathon 2026](https://img.shields.io/badge/SIH-2026-blue.svg?style=for-the-badge&logo=gov.in)](https://sih.gov.in/)
-[![Team](https://img.shields.io/badge/Team-Coordination%20Zero-red.svg?style=for-the-badge)](https://sih.gov.in/)
+[![Team](https://img.shields.io/badge/Team-TrinetraAI-red.svg?style=for-the-badge)](https://sih.gov.in/)
 [![Problem Statement](https://img.shields.io/badge/Problem%20Statement-SIH26106-orange.svg?style=for-the-badge)](https://sih.gov.in/)
 [![Compliance](https://img.shields.io/badge/Compliance-Section%2063%20BSA%202023-purple.svg?style=for-the-badge)](https://indiacode.nic.in)
 [![Tests Passing](https://img.shields.io/badge/Tests-100%25%20Passing-success.svg?style=for-the-badge)](https://pytest.org)
@@ -14,7 +14,7 @@
 
 ---
 
-## 👥 Smart India Hackathon 2026 — Team Coordination Zero
+## 👥 Smart India Hackathon 2026 — Team TrinetraAI
 
 | Role | Name | GitHub | Department | Year | University Roll No. |
 | :--- | :--- | :---: | :--- | :---: | :---: |
@@ -278,4 +278,4 @@ In accordance with responsible engineering practices, TRINETRA explicitly acknow
 
 ---
 
-*Report prepared and submitted by **Team Coordination Zero** for the **Smart India Hackathon 2026**.*
+*Report prepared and submitted by **Team TrinetraAI** for the **Smart India Hackathon 2026**.*
