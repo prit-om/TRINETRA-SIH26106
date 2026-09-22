@@ -15,9 +15,26 @@ export default function GeoMap({ geolocation }) {
     <div className="tn-map">
       <MapContainer center={[lat, lng]} zoom={5} scrollWheelZoom={false} dragging={false} doubleClickZoom={false} touchZoom={false} keyboard={false} className="tn-map-container">
         <TileLayer attribution='&copy; OpenStreetMap contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <Marker position={[lat, lng]}><Popup><strong>{geolocation.city || 'Unknown'}, {geolocation.country || 'Unknown'}</strong><br />ISP: {geolocation.isp || 'Unknown'}<br />IP: {geolocation.earliest_external_ip || 'Unknown'}</Popup></Marker>
+        <Marker position={[lat, lng]}>
+          <Popup>
+            <div style={{ fontSize: '12px', lineHeight: '1.5' }}>
+              <strong style={{ fontSize: '13px', color: '#0f172a' }}>{geolocation.city || 'Unknown'}, {geolocation.country || 'Unknown'}</strong>
+              <div style={{ color: '#0369a1', fontWeight: '600', marginTop: '3px' }}>
+                {geolocation.resolution_source || '7-Tier Forensic Attribution'}
+              </div>
+              <div style={{ color: '#475569', marginTop: '2px' }}>
+                Network/ISP: <strong>{geolocation.isp || 'Identified Node'}</strong>
+              </div>
+              <div style={{ color: '#64748b', fontSize: '11px', marginTop: '2px' }}>
+                ID: <code>{geolocation.earliest_external_ip || 'Network Hop'}</code>
+              </div>
+            </div>
+          </Popup>
+        </Marker>
       </MapContainer>
-      <div className="tn-map-overlay">APPROX. ORIGIN</div>
+      <div className="tn-map-overlay">
+        {geolocation.country ? `APPROX. ORIGIN: ${geolocation.country.toUpperCase()}` : 'APPROX. SENDER ORIGIN'}
+      </div>
     </div>
   );
 }

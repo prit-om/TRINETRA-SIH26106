@@ -384,6 +384,19 @@ def parse_email(
         message.get("Subject")
     )
 
+    date_header = _decode_header_value(
+        message.get("Date")
+    )
+
+    message_id = _decode_header_value(
+        message.get("Message-ID")
+    )
+
+    headers_dict = {
+        str(k): _decode_header_value(v)
+        for k, v in message.items()
+    }
+
     from_name, sender_email = parseaddr(
         from_header
     )
@@ -504,6 +517,9 @@ def parse_email(
         "reply_to": reply_to,
         "subject": subject,
         "body_text": body_text,
+        "date_header": date_header,
+        "message_id": message_id,
+        "headers": headers_dict,
         "urls_found": urls_found,
         "attachments_found": attachments_found,
         "received_chain": received_chain,
