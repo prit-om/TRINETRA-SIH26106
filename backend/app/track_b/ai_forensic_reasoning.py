@@ -868,6 +868,37 @@ def _validate_llm_result(
     }
 
 
+def _local_llm_call(prompt: str) -> str:
+    """Query an on-premise local LLM (Ollama / LocalAI / LMStudio / vLLM)."""
+    import requests
+    settings = get_settings()
+    base_url = str(getattr(settings, "local_llm_url", "http://localhost:11434/v1")).rstrip("/")
+    model = str(getattr(settings, "local_llm_model", "llama3.2:1b"))
+    timeout = float(getattr(settings, "local_llm_timeout_seconds", 8.0))
+
+    endpoint = f"{base_url}/chat/completions" if not base_url.endswith("/chat/completions") else base_url
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": "You are the senior forensic reasoning component of Trinetra. Return ONLY a valid JSON object."},
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.0,
+        "response_format": {"type": "json_object"}
+    }
+    headers = {"Content-Type": "application/json"}
+
+    resp = requests.post(endpoint, json=payload, headers=headers, timeout=timeout)
+    resp.raise_for_status()
+    data = resp.json()
+    choices = data.get("choices", [])
+    if choices and "message" in choices[0]:
+        return str(choices[0]["message"].get("content", "")).strip()
+    if "response" in data:
+        return str(data["response"]).strip()
+    raise RuntimeError("Local LLM returned invalid structure")
+
+
 # ---------------------------------------------------------------------------
 # Main Layer 3 entry point
 # ---------------------------------------------------------------------------
@@ -879,6 +910,7 @@ def synthesize_forensic_reasoning(
     layer2_result: dict,
     geolocation: dict,
     nlp_analysis: dict,
+    air_gapped: bool = False,
 ) -> dict:
 
     """
@@ -887,6 +919,7 @@ def synthesize_forensic_reasoning(
     This function MUST be called after Layer 1
     and Layer 2 have completed.
     """
+    settings = get_settings()
 
     # ---------------------------------------------------------------
     # Sanitize / bound untrusted email content
@@ -938,37 +971,53 @@ def synthesize_forensic_reasoning(
     )
 
     # ---------------------------------------------------------------
-    # Gemini reasoning
+    # 1. AIR-GAPPED / SOVEREIGN MODE (Zero Cloud Exfiltration)
     # ---------------------------------------------------------------
+    if air_gapped:
+        try:
+            raw = _local_llm_call(prompt)
+            cleaned = _strip_json_fences(raw)
+            data = json.loads(cleaned)
+            res = _validate_llm_result(data)
+            res["reasoning_source"] = f"local-llm ({settings.local_llm_model}) [Air-Gapped]"
+            return res
+        except Exception as local_err:
+            logger.info(
+                "Local LLM reasoning unavailable in air-gapped mode, using deterministic synthesis: %s",
+                local_err,
+            )
+            res = _deterministic_synthesis(header_analysis, layer2_result, nlp_analysis)
+            res["reasoning_source"] = "deterministic-synthesis [Air-Gapped]"
+            return res
 
+    # ---------------------------------------------------------------
+    # 2. HYBRID CLOUD MODE (Gemini primary -> Local LLM failover -> Deterministic fallback)
+    # ---------------------------------------------------------------
     try:
-
-        raw = _gemini_call(
-            prompt
-        )
-
-        cleaned = _strip_json_fences(
-            raw
-        )
-
-        data = json.loads(
-            cleaned
-        )
-
-        return _validate_llm_result(
-            data
-        )
+        raw = _gemini_call(prompt)
+        cleaned = _strip_json_fences(raw)
+        data = json.loads(cleaned)
+        return _validate_llm_result(data)
 
     except Exception as exc:
-
         logger.warning(
-            "Layer 3 Gemini synthesis unavailable; "
-            "using deterministic fallback: %s",
+            "Layer 3 Gemini synthesis unavailable (%s). Attempting local LLM failover...",
             exc,
         )
-
-        return _deterministic_synthesis(
-            header_analysis,
-            layer2_result,
-            nlp_analysis,
-        )
+        try:
+            raw = _local_llm_call(prompt)
+            cleaned = _strip_json_fences(raw)
+            data = json.loads(cleaned)
+            res = _validate_llm_result(data)
+            res["reasoning_source"] = f"local-llm-failover ({settings.local_llm_model})"
+            return res
+        except Exception as local_fail:
+            logger.warning(
+                "Layer 3 Local LLM failover also unavailable (%s); using deterministic fallback.",
+                local_fail,
+            )
+            return _deterministic_synthesis(
+                header_analysis,
+                layer2_result,
+                nlp_analysis,
+            )

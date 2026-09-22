@@ -159,6 +159,7 @@ def analyze_raw(
     filename="email.eml",
     evidence_override=None,
     stored_raw=None,
+    air_gapped: bool = False,
 ):
     if not raw_email_bytes:
         raise ValueError("Email artifact is empty")
@@ -212,6 +213,7 @@ def analyze_raw(
         body_text=parsed["body_text"],
         sender_email=parsed["sender_email"],
         reply_to=parsed["reply_to"],
+        air_gapped=air_gapped,
     )
 
     # --------------------------------------------------------
@@ -229,7 +231,8 @@ def analyze_raw(
     # --------------------------------------------------------
 
     tb = process_track_b(
-        _json_safe_track_a(track_a)
+        _json_safe_track_a(track_a),
+        air_gapped=air_gapped,
     )
 
     # --------------------------------------------------------
@@ -336,6 +339,13 @@ def analyze_raw(
         "summary": _build_summary(
             nlp,
             header,
+        ),
+
+        "air_gapped": air_gapped,
+
+        "engine_mode": tb.get(
+            "engine_mode",
+            "Air-Gapped Sovereign (Zero Cloud Exfiltration)" if air_gapped else "Hybrid Dual-Engine (Cloud Gemini + Local Failover)",
         ),
 
         "sender_email": parsed[
@@ -487,6 +497,7 @@ async def analyze(
     file: UploadFile | None = File(default=None),
     raw_text: str | None = Form(default=None),
     role: str = Form(default="analyst"),
+    air_gapped: bool = Form(default=False),
     x_trinetra_api_key: str | None = Header(default=None),
 ):
     # --------------------------------------------------------
@@ -612,6 +623,7 @@ async def analyze(
             name,
             evidence_override=evidence_override,
             stored_raw=original_raw,
+            air_gapped=air_gapped,
         )
 
     except ValueError as exc:

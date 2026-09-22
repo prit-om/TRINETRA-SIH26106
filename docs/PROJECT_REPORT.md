@@ -304,10 +304,30 @@ Inspects file extensions, MIME signatures, and magic numbers:
 
 The Layer 3 engine analyzes linguistic intent and behavioral psychological manipulation, contributing a 25% weight ($w_3 = 0.25$).
 
-#### Dual-Engine Architecture
-To ensure high resilience, TRINETRA implements a dual-engine design:
-1. **Primary Cloud LLM (Gemini)**: Fast semantic reasoning model processing sanitized email bodies under strict prompt-injection sandboxing.
-2. **Zero-Dependency Offline Heuristic Cascade**: A local regex pattern bank that operates with zero network connectivity, ensuring full forensic capability in air-gapped environments.
+#### Tri-Tier Hybrid AI & Air-Gapped Sovereign Architecture
+To reconcile high-throughput cognitive cloud intelligence with stringent Indian National Security sovereign privacy directives, TRINETRA deploys a **Tri-Tier Hybrid AI Architecture**:
+
+1. **Tier 1 — High-Throughput Cloud AI (Google Gemini 2.5 Flash)**:
+   - Primary cognitive reasoning engine evaluating complex multi-lingual social engineering and multi-vector psychological manipulation.
+   - Operating under an enforced 10-second deadline with rigorous prompt-injection XML sandboxing.
+   - Ideal for standard enterprise SOCs and civil corporate environments.
+
+2. **Tier 2 — Sovereign Local On-Premise LLM (Llama 3.2 via Ollama / OpenAI-compatible `/v1`)**:
+   - Deployed locally on-premise (`http://localhost:11434/v1`, model: `llama3.2:1b` or `llama3.2:3b`).
+   - Acts as an instantaneous local failover if cloud network latency exceeds timeout thresholds or API limits are encountered.
+   - Primary engine when **Air-Gapped Sovereign Mode** is engaged (`air_gapped=True`).
+   - Guarantees **Zero Data Exfiltration**: raw email artifacts, evidentiary tokens, and recipient identities never leave the local hardware perimeter.
+
+3. **Tier 3 — Deterministic Offline Indic Regex Cascade**:
+   - Zero-dependency algorithmic safety net executing in $<5\text{ms}$.
+   - Houses compiled regex pattern banks covering 10+ Indic scripts, financial coercion terms, and impersonation keywords.
+   - Guarantees uninterrupted system continuity even in the event of complete GPU/LLM infrastructure downtime.
+
+#### Air-Gapped Sovereign Mode for Law Enforcement & Defense
+Under Section 63 BSA 2023 and national data sovereignty regulations, Law Enforcement Agencies (LEAs), military intelligence units, and financial institutions handling classified evidentiary materials cannot permit electronic evidence to traverse public cloud networks. When the user enables the `Air-Gapped Sovereign Mode` switch via the frontend dashboard or passes `air_gapped=true` to the `/analyze` API:
+- All outbound cloud network calls (including Gemini API and external DNS lookups) are strictly bypassed.
+- Analysis executes entirely within the local host boundaries using on-premise Llama 3.2 and offline MaxMind GeoLite2 binary databases.
+- The forensic report is watermarked with `🛡️ Air-Gapped Sovereign (Zero Cloud Exfiltration)` certifying electronic chain-of-custody compliance.
 
 #### 10+ Indic Regional Languages Coverage
 Unlike Western security software, TRINETRA explicitly parses scripts across India:

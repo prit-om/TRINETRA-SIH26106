@@ -36,7 +36,8 @@
 | **Privacy Preservation** | **Zero-Leak PII Redaction**: Masks Aadhaar numbers, PAN cards, phone numbers | Raw sensitive user data stored unredacted in logs |
 | **Anti-Anonymizer Intel** | **Tor Exit Node & VPN Range Detection** with client clock drift skew | Blind to VPN masking and forged timestamps |
 | **Campaign Intelligence** | **Cytoscape & Neo4j Knowledge Graph** linking IOCs across cases | Isolated per-email threat alerts without campaign context |
-| **Resilience & Fallback** | **Dual-Engine NLP**: Gemini AI with zero-dependency offline Indic regex cascade | Crashes or stalls if external cloud LLM fails |
+| **Sovereign AI & Hybrid Pipeline** | **Tri-Tier AI Architecture**: Cloud Gemini + Local Llama 3.2 (Ollama) + Offline Heuristics with **Air-Gapped Sovereign Mode** (Zero Data Exfiltration for LEA) | Single-vendor cloud lock-in with mandatory data exfiltration |
+| **Resilience & Fallback** | **Zero-Downtime Cascade**: Gemini -> Local LLM -> Offline Indic Regex. Works 100% air-gapped | Crashes or stalls if external cloud LLM fails |
 
 ---
 
@@ -79,6 +80,24 @@ flowchart TD
         SOC --> ALERTS["Real-Time IMAP Live Monitor"]
     end
 ```
+
+### 🤖 Tri-Tier Hybrid AI & Air-Gapped Sovereign Architecture
+To reconcile **extreme cloud AI reasoning power** with **strict Indian Law Enforcement sovereign privacy**, TRINETRA implements a **Tri-Tier AI Pipeline**:
+
+```mermaid
+flowchart LR
+    EMAIL["Incoming Email Stream"] --> CHECK{"Engine Mode?"}
+    
+    CHECK -- "⚡ Hybrid Mode (Default)" --> CLOUD["1. Primary: Google Gemini 2.5 Flash<br/>• Fast multi-lingual cognitive analysis<br/>• Prompt-injection shielded"]
+    CLOUD -- "Network Failure / Timeout (>8s)" --> LOCAL["2. Failover: Local On-Premise LLM<br/>• Llama 3.2 via Ollama (/v1 API)<br/>• Zero cloud egress"]
+    LOCAL -- "Ollama Offline" --> DETERMINISTIC["3. Safety Net: Offline Indic Regex<br/>• 10+ Indic scripts & lexical banks<br/>• <5ms deterministic execution"]
+    
+    CHECK -- "🛡️ Air-Gapped Sovereign Mode" --> LOCAL_SOV["1. Local On-Premise LLM (Llama 3.2)<br/>• 100% Zero Data Exfiltration<br/>• Air-Gapped LEA & Defense Enclaves"]
+    LOCAL_SOV -- "Fallback" --> DETERMINISTIC
+```
+
+1. **⚡ Hybrid Dual-Engine Mode (Default)**: Uses the user's high-speed Google Gemini API for deep cognitive synthesis across Indic languages. If network connectivity drops or the cloud times out, the pipeline instantly fails over to the local Llama model without failing the analysis.
+2. **🛡️ Air-Gapped Sovereign Mode (Zero Data Exfiltration)**: Purpose-built for Police Cyber Cells, Military intelligence, and high-security air-gapped forensic labs. When toggled via the UI or API (`air_gapped=true`), TRINETRA **strictly bypasses all outbound cloud network requests**, running exclusively through the local on-premise model and offline deterministic heuristics.
 
 ---
 
@@ -187,10 +206,16 @@ npm run dev -- --host 127.0.0.1 --port 5173
 TRINETRA works **100% offline** with built-in heuristic pattern banks and local MaxMind databases. Optional external intelligence services can be configured in `backend/.env`:
 
 ```ini
-# Google Gemini AI (Optional - Heuristic fallback available)
+# Google Gemini Cloud AI (Primary Hybrid Engine)
 GEMINI_API_KEY=your_gemini_api_key_here
-GEMINI_MODEL=gemini-3.6-flash
+GEMINI_MODEL=gemini-3.5-flash-lite
 LLM_PROVIDER=gemini
+LLM_TIMEOUT_SECONDS=10
+
+# Local On-Premise LLM (Ollama / Llama 3.2 - Air-Gapped & Sovereign Failover)
+LOCAL_LLM_URL=http://localhost:11434/v1
+LOCAL_LLM_MODEL=llama3.2:1b
+LOCAL_LLM_TIMEOUT_SECONDS=8.0
 
 # VirusTotal Threat Feed (Optional)
 VIRUSTOTAL_API_KEY=your_virustotal_api_key_here

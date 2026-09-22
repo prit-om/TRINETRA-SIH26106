@@ -41,6 +41,7 @@ def _as_list(value: Any) -> list:
 def process_track_b(
     track_a_output: dict,
     db_connection=None,
+    air_gapped: bool = False,
 ) -> dict:
     """
     Execute the complete Trinetra Track B pipeline.
@@ -62,6 +63,7 @@ def process_track_b(
     # ------------------------------------------------------------------
     # INPUT NORMALIZATION
     # ------------------------------------------------------------------
+    air_gapped = bool(air_gapped or track_a_output.get("air_gapped", False))
 
     sender_email = str(track_a_output.get("sender_email") or "").strip()
     sender_display_name = str(
@@ -233,14 +235,25 @@ def process_track_b(
     # ------------------------------------------------------------------
 
     try:
-        layer3_result = synthesize_forensic_reasoning(
-            subject=subject,
-            body_text=body_text,
-            header_analysis=header_analysis,
-            layer2_result=layer2_result,
-            geolocation=geolocation,
-            nlp_analysis=nlp_analysis,
-        )
+        try:
+            layer3_result = synthesize_forensic_reasoning(
+                subject=subject,
+                body_text=body_text,
+                header_analysis=header_analysis,
+                layer2_result=layer2_result,
+                geolocation=geolocation,
+                nlp_analysis=nlp_analysis,
+                air_gapped=air_gapped,
+            )
+        except TypeError:
+            layer3_result = synthesize_forensic_reasoning(
+                subject=subject,
+                body_text=body_text,
+                header_analysis=header_analysis,
+                layer2_result=layer2_result,
+                geolocation=geolocation,
+                nlp_analysis=nlp_analysis,
+            )
     except Exception as exc:
         logger.exception(
             "Layer 3 reasoning failed: %s",
@@ -393,4 +406,10 @@ def process_track_b(
         "related_case_ids": related_case_ids,
 
         "historical_indicators": indicators,
+        "air_gapped": air_gapped,
+        "engine_mode": (
+            "Air-Gapped Sovereign (Zero Cloud Exfiltration)"
+            if air_gapped
+            else "Hybrid Dual-Engine (Cloud Gemini + Local Failover)"
+        ),
     }

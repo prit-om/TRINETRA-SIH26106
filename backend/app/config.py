@@ -7,7 +7,10 @@ class Settings(BaseSettings):
     llm_provider: str = "gemini"
     gemini_api_key: str | None = None
     gemini_model: str = "gemini-3.6-flash"
-    llm_timeout_seconds: float = 5.0
+    llm_timeout_seconds: float = 10.0
+    local_llm_url: str = "http://localhost:11434/v1"
+    local_llm_model: str = "llama3.2:1b"
+    local_llm_timeout_seconds: float = 8.0
     cors_origins: str = "*"
     max_upload_bytes: int = 15 * 1024 * 1024
     analyst_api_key: str | None = None

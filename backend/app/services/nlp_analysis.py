@@ -155,12 +155,45 @@ def _gemini_call(prompt: str) -> str:
     raise last_exc
 
 
+def _local_llm_call(prompt: str) -> str:
+    """Query an on-premise local LLM via standard OpenAI/Ollama compatible endpoint."""
+    import requests
+    settings = get_settings()
+    base_url = str(getattr(settings, "local_llm_url", "http://localhost:11434/v1")).rstrip("/")
+    model = str(getattr(settings, "local_llm_model", "llama3.2:1b"))
+    timeout = float(getattr(settings, "local_llm_timeout_seconds", 8.0))
+
+    endpoint = f"{base_url}/chat/completions" if not base_url.endswith("/chat/completions") else base_url
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": "You are an email forensic security analyst. Return ONLY a valid JSON object."},
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.0,
+        "response_format": {"type": "json_object"}
+    }
+    headers = {"Content-Type": "application/json"}
+
+    resp = requests.post(endpoint, json=payload, headers=headers, timeout=timeout)
+    resp.raise_for_status()
+    data = resp.json()
+    choices = data.get("choices", [])
+    if choices and "message" in choices[0]:
+        return str(choices[0]["message"].get("content", "")).strip()
+    if "response" in data:
+        return str(data["response"]).strip()
+    raise RuntimeError("Local LLM returned invalid structure")
+
+
 def analyze_content(
     subject: str,
     body_text: str,
     sender_email: str,
     reply_to: str,
+    air_gapped: bool = False,
 ) -> dict:
+    settings = get_settings()
     prompt = PROMPT_TEMPLATE.format(
         subject=subject or "",
         body=body_text or "",
@@ -168,67 +201,59 @@ def analyze_content(
         reply_to=reply_to or "",
     )
 
+    # 1. AIR-GAPPED / SOVEREIGN MODE (Zero Data Exfiltration)
+    if air_gapped:
+        try:
+            raw = _local_llm_call(prompt)
+            result = _parse_and_validate(raw)
+            result["model_used"] = f"local-llm ({settings.local_llm_model})"
+            result["privacy_mode"] = "air-gapped-sovereign"
+            return result
+        except Exception as local_err:
+            logger.info(
+                "Local LLM service unavailable in air-gapped mode, using deterministic heuristics: %s",
+                local_err,
+            )
+            from app.services.nlp_fallback_offline import analyze_content_fallback
+            fallback = analyze_content_fallback(subject, body_text, sender_email, reply_to)
+            fallback["model_used"] = "offline-heuristics"
+            fallback["privacy_mode"] = "air-gapped-sovereign"
+            return fallback
+
+    # 2. HYBRID CLOUD MODE (Gemini primary -> Local LLM failover -> Heuristic fallback)
     try:
         raw = _gemini_call(prompt)
-
         try:
-            return _parse_and_validate(raw)
-
+            result = _parse_and_validate(raw)
+            result["privacy_mode"] = "hybrid-cloud"
+            return result
         except Exception:
-            # Gemini can occasionally return JSON surrounded by
-            # extra text despite requesting JSON-only output.
             cleaned = _strip_json_fences(raw)
-
-            match = re.search(
-                r"\{.*\}",
-                cleaned,
-                flags=re.DOTALL,
-            )
-
+            match = re.search(r"\{.*\}", cleaned, flags=re.DOTALL)
             if not match:
                 raise
-
-            return _parse_and_validate(
-                match.group(0)
-            )
+            result = _parse_and_validate(match.group(0))
+            result["privacy_mode"] = "hybrid-cloud"
+            return result
 
     except Exception as exc:
         logger.warning(
-            "NLP/LLM analysis unavailable, "
-            "using offline keyword fallback: %s",
+            "Gemini Cloud NLP unavailable (%s). Attempting local on-premise LLM failover...",
             exc,
         )
-
-        from app.services.nlp_fallback_offline import (
-            analyze_content_fallback,
-        )
-
-        fallback = analyze_content_fallback(
-            subject,
-            body_text,
-            sender_email,
-            reply_to,
-        )
-
-        # Optional local transformer layer.
-        # Failure here must never break the analysis request.
+        # Failover to on-premise local LLM (e.g. Ollama Llama-3.2)
         try:
-            from app.services.nlp_local_model import score
-
-            local = score(
-                f"{subject}\n{body_text}"
+            raw = _local_llm_call(prompt)
+            result = _parse_and_validate(raw)
+            result["model_used"] = f"local-llm-failover ({settings.local_llm_model})"
+            result["privacy_mode"] = "hybrid-local-failover"
+            return result
+        except Exception as local_fail:
+            logger.warning(
+                "Local LLM failover also unavailable (%s). Using offline deterministic fallback.",
+                local_fail,
             )
-
-            if local:
-                fallback["local_transformer"] = local
-                fallback["model_used"] = local[
-                    "model_used"
-                ]
-
-        except Exception as local_exc:
-            logger.debug(
-                "Local transformer unavailable: %s",
-                local_exc,
-            )
-
-        return fallback
+            from app.services.nlp_fallback_offline import analyze_content_fallback
+            fallback = analyze_content_fallback(subject, body_text, sender_email, reply_to)
+            fallback["privacy_mode"] = "hybrid-offline-fallback"
+            return fallback
