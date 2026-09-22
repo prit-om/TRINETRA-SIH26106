@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     gemini_api_key: str | None = None
     gemini_model: str = "gemini-3.6-flash"
     llm_provider: str = "gemini"
-    llm_timeout_seconds: float = 60.0
+    llm_timeout_seconds: float = 5.0
 
     # ------------------------------------------------------------------
     # VirusTotal

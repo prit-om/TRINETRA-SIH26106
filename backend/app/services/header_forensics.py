@@ -48,9 +48,35 @@ def _result_from_spf_code(code: str | None) -> str:
     return "none"
 
 
+import ipaddress
+
+def _get_fast_resolver():
+    if dns is None:
+        return None
+    try:
+        res = dns.Resolver()
+        res.lifetime = 1.0
+        res.timeout = 0.8
+        return res
+    except Exception:
+        return dns
+
+
 def _get_sending_ip(parsed_fields: dict[str, Any]) -> str:
+    c_ip = str(parsed_fields.get("client_ip") or "").strip()
+    if c_ip and _valid_ip(c_ip):
+        return c_ip
     chain = parsed_fields.get("received_chain") or []
-    # The earliest parsed hop is the most useful candidate for origin.
+    # Prioritize non-relay public IPs
+    for hop in chain:
+        ip = hop.get("ip", "")
+        if _valid_ip(ip):
+            try:
+                addr = ipaddress.ip_address(ip)
+                if addr.is_global and not addr.is_private and not addr.is_reserved and not (addr.version == 6 and addr in ipaddress.ip_network("2002::/16")):
+                    return ip
+            except ValueError:
+                pass
     for hop in chain:
         ip = hop.get("ip", "")
         if _valid_ip(ip):
@@ -90,20 +116,26 @@ def _dkim_result(raw_email_bytes: bytes) -> str:
 
 
 def _dmarc_policy(from_domain: str) -> str:
-    if not from_domain or dns is None: return "none"
+    if not from_domain: return "none"
+    resolver = _get_fast_resolver()
+    if resolver is None: return "none"
     try:
-        answers=dns.resolve(f"_dmarc.{from_domain}","TXT")
-        txt="".join(part.decode() if isinstance(part,bytes) else str(part) for answer in answers for part in answer.strings)
-        m=re.search(r"(?i)(?:^|;)\s*p\s*=\s*([a-z]+)",txt)
+        answers = resolver.resolve(f"_dmarc.{from_domain}", "TXT", lifetime=1.0)
+        txt = "".join(part.decode() if isinstance(part, bytes) else str(part) for answer in answers for part in answer.strings)
+        m = re.search(r"(?i)(?:^|;)\s*p\s*=\s*([a-z]+)", txt)
         return m.group(1).lower() if m else "none"
     except Exception: return "none"
 
+
 def _dmarc_result(from_domain: str):
-    if not from_domain or dns is None:
+    if not from_domain:
+        return "none"
+    resolver = _get_fast_resolver()
+    if resolver is None:
         return "none"
 
     try:
-        answers = dns.resolve(f"_dmarc.{from_domain}", "TXT")
+        answers = resolver.resolve(f"_dmarc.{from_domain}", "TXT", lifetime=1.0)
         txt = "".join(
             part.decode() if isinstance(part, bytes) else str(part)
             for answer in answers
@@ -116,9 +148,6 @@ def _dmarc_result(from_domain: str):
         if not policy_value:
             return "none"
 
-        # A DMARC policy record existing is not itself a pass/fail result.
-        # For this standalone module, perform a conservative alignment-based
-        # interpretation only when an Authentication-Results header is present.
         return "none"
     except Exception:
         return "none"
@@ -130,6 +159,32 @@ def _authentication_results_dmarc(message) -> str:
         if match:
             return match.group(1).lower()
     return "none"
+
+
+def _authentication_results_spf(message) -> str:
+    for value in message.get_all("Received-SPF", []):
+        m = re.search(r"(?i)^\s*(pass|fail|softfail|neutral|none)\b", str(value))
+        if m:
+            code = m.group(1).lower()
+            return "pass" if code == "pass" else ("fail" if code in {"fail", "softfail"} else "none")
+    for auth in list(message.get_all("Authentication-Results", [])) + list(
+        message.get_all("ARC-Authentication-Results", [])
+    ):
+        m = re.search(r"(?i)\bspf\s*=\s*(pass|fail|softfail|neutral|none)\b", str(auth))
+        if m:
+            code = m.group(1).lower()
+            return "pass" if code == "pass" else ("fail" if code in {"fail", "softfail"} else "none")
+    return ""
+
+
+def _authentication_results_dkim(message) -> str:
+    for auth in list(message.get_all("Authentication-Results", [])) + list(
+        message.get_all("ARC-Authentication-Results", [])
+    ):
+        m = re.search(r"(?i)\bdkim\s*=\s*(pass|fail)\b", str(auth))
+        if m:
+            return m.group(1).lower()
+    return ""
 
 
 def analyze_headers(raw_email_bytes: bytes, parsed_fields: dict) -> dict:
@@ -150,8 +205,19 @@ def analyze_headers(raw_email_bytes: bytes, parsed_fields: dict) -> dict:
     )
 
     sending_ip = _get_sending_ip(parsed_fields)
-    spf_result = _spf_result(from_domain, sending_ip, parsed_fields.get("sender_email", ""))
-    dkim_result = _dkim_result(raw_email_bytes)
+
+    # Prefer explicit Authentication-Results / Received-SPF if present
+    spf_header_val = _authentication_results_spf(message) if message is not None else ""
+    if spf_header_val:
+        spf_result = spf_header_val
+    else:
+        spf_result = _spf_result(from_domain, sending_ip, parsed_fields.get("sender_email", ""))
+
+    dkim_header_val = _authentication_results_dkim(message) if message is not None else ""
+    if dkim_header_val:
+        dkim_result = dkim_header_val
+    else:
+        dkim_result = _dkim_result(raw_email_bytes)
 
     # Prefer an explicit Authentication-Results DMARC result when present.
     if message is not None:
@@ -161,10 +227,10 @@ def analyze_headers(raw_email_bytes: bytes, parsed_fields: dict) -> dict:
     else:
         dmarc_result = "none"
 
-    dmarc_policy=_dmarc_policy(from_domain)
-    relay_anomalies=[]
-    chain=parsed_fields.get("relay_forensics",{}) if isinstance(parsed_fields,dict) else {}
-    relay_anomalies=chain.get("anomalies",[]) if isinstance(chain,dict) else []
+    dmarc_policy = _dmarc_policy(from_domain)
+    relay_anomalies = []
+    chain = parsed_fields.get("relay_forensics", {}) if isinstance(parsed_fields, dict) else {}
+    relay_anomalies = chain.get("anomalies", []) if isinstance(chain, dict) else []
     return {
         "from_domain": from_domain,
         "return_path_domain": return_path_domain,
@@ -179,4 +245,6 @@ def analyze_headers(raw_email_bytes: bytes, parsed_fields: dict) -> dict:
         "relay_anomalies": relay_anomalies,
         "sender_returnpath_mismatch": mismatch,
         "replyto_anomaly": replyto_anomaly,
+        "originating_ip": sending_ip,
+        "client_ip": sending_ip,
     }

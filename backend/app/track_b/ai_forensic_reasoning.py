@@ -666,41 +666,24 @@ def _gemini_call(prompt: str) -> str:
         model_name = "gemini-3.6-flash"
 
     candidate_models = [model_name]
-    for fallback_model in (
-        "gemini-3.6-flash",
-        "gemini-3.5-flash",
-        "gemini-3.8-flash",
-        "gemini-3.5-flash-lite",
-        "gemini-3.1-flash-lite",
-    ):
-        if fallback_model not in candidate_models:
-            candidate_models.append(fallback_model)
+    if "gemini-3.5-flash-lite" not in candidate_models:
+        candidate_models.append("gemini-3.5-flash-lite")
 
     timeout_seconds = getattr(
         settings,
         "llm_timeout_seconds",
-        DEFAULT_GEMINI_TIMEOUT,
+        10.0,
     )
 
     try:
         timeout_seconds = float(
             timeout_seconds
         )
+    except (TypeError, ValueError):
+        timeout_seconds = 10.0
 
-    except (
-        TypeError,
-        ValueError,
-    ):
-        timeout_seconds = (
-            DEFAULT_GEMINI_TIMEOUT
-        )
-
-    timeout_ms = max(
-        1000,
-        int(
-            timeout_seconds * 1000
-        ),
-    )
+    # google-genai enforces minimum 10s deadline for API calls.
+    timeout_ms = max(10000, int(timeout_seconds * 1000))
 
     # ---------------------------------------------------------------
     # Current Google SDK
@@ -727,9 +710,9 @@ def _gemini_call(prompt: str) -> str:
     for current_model in candidate_models:
         logger.info(
             "Gemini Layer 3 request starting: "
-            "model=%s timeout=%ss",
+            "model=%s timeout_ms=%d",
             current_model,
-            timeout_seconds,
+            timeout_ms,
         )
 
         try:
@@ -764,15 +747,11 @@ def _gemini_call(prompt: str) -> str:
 
         except Exception as exc:
             last_exc = exc
-            err_msg = str(exc)
             logger.warning(
                 "Gemini Layer 3 request failed on model=%s: %s",
                 current_model,
                 exc,
             )
-            if "503" in err_msg or "429" in err_msg or "UNAVAILABLE" in err_msg:
-                import time
-                time.sleep(1.0)
             continue
 
     logger.exception(

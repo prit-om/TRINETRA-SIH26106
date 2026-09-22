@@ -104,8 +104,15 @@ def process_track_b(
         logger.exception("Attachment analysis failed: %s", exc)
         attachment_findings = []
 
+    client_ip = str(
+        track_a_output.get("client_ip")
+        or header_analysis.get("client_ip")
+        or header_analysis.get("originating_ip")
+        or ""
+    ).strip()
+
     try:
-        geolocation = geolocate_origin(received_chain) or {}
+        geolocation = geolocate_origin(received_chain, client_ip=client_ip) or {}
     except Exception as exc:
         logger.exception("Geolocation analysis failed: %s", exc)
         geolocation = {

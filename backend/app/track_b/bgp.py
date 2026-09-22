@@ -11,7 +11,10 @@ def lookup_bgp(ip:str)->dict:
         addr=ipaddress.ip_address(ip)
         if addr.version!=4: return out
         rev='.'.join(reversed(ip.split('.')))+'.origin.asn.cymru.com'
-        txt=' '.join(str(r) for r in dns.resolve(rev,'TXT'))
+        r = dns.resolver.Resolver()
+        r.lifetime = 0.8
+        r.timeout = 0.6
+        txt=' '.join(str(ans) for ans in r.resolve(rev,'TXT', lifetime=0.8))
         # TXT format: "ASN | prefix | country | registry | allocated"
         parts=[x.strip() for x in txt.replace('"','').split('|')]
         if len(parts)>=4:

@@ -6,6 +6,8 @@ try:
 except Exception:
     dns=None
 
+from concurrent.futures import ThreadPoolExecutor
+
 def analyze_domain(domain: str) -> dict:
     d=(domain or '').lower().strip().rstrip('.')
     result={"domain":d,"dns_available":bool(dns),"a_records":[],"mx_records":[],"nameservers":[],"domain_age_days":None,"risk_flags":[]}
@@ -17,10 +19,20 @@ def analyze_domain(domain: str) -> dict:
         result['a_records']=socket.gethostbyname_ex(d)[2]
     except Exception: pass
     if dns:
-        for typ,key in [('MX','mx_records'),('NS','nameservers')]:
-            try: result[key]=[str(x).rstrip('.') for x in dns.resolve(d,typ)]
-            except Exception: pass
+        try:
+            r = dns.resolver.Resolver()
+            r.lifetime = 0.8
+            r.timeout = 0.6
+            for typ,key in [('MX','mx_records'),('NS','nameservers')]:
+                try: result[key]=[str(x).rstrip('.') for x in r.resolve(d, typ, lifetime=0.8)]
+                except Exception: pass
+        except Exception: pass
     return result
 
 def analyze_domains(domains):
-    return [analyze_domain(d) for d in sorted(set(x for x in (domains or []) if x))]
+    unique = sorted(set(x for x in (domains or []) if x))[:4]
+    if not unique:
+        return []
+    with ThreadPoolExecutor(max_workers=min(4, len(unique))) as executor:
+        return list(executor.map(analyze_domain, unique))
+

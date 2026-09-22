@@ -314,6 +314,30 @@ def _has_meaningful_email_data(
     return has_headers or has_body
 
 
+def _extract_client_ip(message: Message) -> str:
+    """Extract authentic client IP from authentication or originating headers."""
+    for spf_header in message.get_all("Received-SPF", []):
+        m = re.search(r"(?i)\bclient-ip\s*=\s*([0-9a-fA-F.:]+)", str(spf_header))
+        if m and _valid_ip(m.group(1).strip()):
+            return m.group(1).strip()
+
+    for auth_header in list(message.get_all("Authentication-Results", [])) + list(
+        message.get_all("ARC-Authentication-Results", [])
+    ):
+        m = re.search(r"(?i)\b(?:client-ip|ip)\s*=\s*([0-9a-fA-F.:]+)", str(auth_header))
+        if m and _valid_ip(m.group(1).strip()):
+            return m.group(1).strip()
+
+    for x_ip_name in ("X-Originating-IP", "X-Sender-IP"):
+        val = message.get(x_ip_name)
+        if val:
+            ips = [ip for ip in IP_RE.findall(str(val)) if _valid_ip(ip)]
+            if ips:
+                return ips[0]
+
+    return ""
+
+
 def parse_email(
     raw_email_bytes: bytes,
 ) -> dict:
@@ -464,6 +488,11 @@ def parse_email(
     )
 
     # ---------------------------------------------------------
+    # Client / Originating IP Hint
+    # ---------------------------------------------------------
+    client_ip = _extract_client_ip(message)
+
+    # ---------------------------------------------------------
     # Normalized result
     # ---------------------------------------------------------
 
@@ -478,4 +507,5 @@ def parse_email(
         "urls_found": urls_found,
         "attachments_found": attachments_found,
         "received_chain": received_chain,
+        "client_ip": client_ip,
     }

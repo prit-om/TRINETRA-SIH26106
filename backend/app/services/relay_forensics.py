@@ -21,5 +21,14 @@ def analyze_relay_chain(chain: list[dict]) -> dict:
 
 def _private(ip):
     import ipaddress
-    try: return not ipaddress.ip_address(ip).is_global
-    except ValueError: return True
+    try:
+        addr = ipaddress.ip_address(ip)
+        if not addr.is_global or addr.is_private or addr.is_reserved or addr.is_loopback or addr.is_link_local:
+            return True
+        if addr.version == 6:
+            if addr in ipaddress.ip_network("2002::/16") or addr in ipaddress.ip_network("2001:0::/32"):
+                return True
+        return False
+    except ValueError:
+        return True
+

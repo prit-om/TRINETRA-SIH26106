@@ -109,20 +109,11 @@ def _gemini_call(prompt: str) -> str:
     model_name = settings.gemini_model.strip() if settings.gemini_model else "gemini-3.6-flash"
 
     candidate_models = [model_name]
-    for fallback_model in (
-        "gemini-3.6-flash",
-        "gemini-3.5-flash",
-        "gemini-3.8-flash",
-        "gemini-3.5-flash-lite",
-        "gemini-3.1-flash-lite",
-    ):
-        if fallback_model not in candidate_models:
-            candidate_models.append(fallback_model)
+    if "gemini-3.5-flash-lite" not in candidate_models:
+        candidate_models.append("gemini-3.5-flash-lite")
 
-    # google-genai uses milliseconds for HttpOptions.timeout.
-    timeout_ms = int(
-        float(settings.llm_timeout_seconds) * 1000
-    )
+    # google-genai enforces minimum 10s deadline for API calls.
+    timeout_ms = max(10000, int(float(settings.llm_timeout_seconds) * 1000))
 
     client = genai.Client(
         api_key=settings.gemini_api_key,
@@ -154,15 +145,11 @@ def _gemini_call(prompt: str) -> str:
 
         except Exception as exc:
             last_exc = exc
-            err_msg = str(exc)
             logger.warning(
                 "Gemini NLP request failed on model=%s: %s",
                 current_model,
                 exc,
             )
-            if "503" in err_msg or "429" in err_msg or "UNAVAILABLE" in err_msg:
-                import time
-                time.sleep(1.0)
             continue
 
     raise last_exc
