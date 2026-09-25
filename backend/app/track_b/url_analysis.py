@@ -67,7 +67,7 @@ def _expand(url: str) -> tuple[str, int]:
             allow_redirects=True,
             timeout=timeout,
             stream=True,
-            headers={"User-Agent": "TrinetraAI/1.0"}
+            headers={"User-Agent": "TrinetraAIVision/1.0"}
         )
         u = r.url or url
         n = len(r.history)

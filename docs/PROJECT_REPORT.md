@@ -1,7 +1,7 @@
 # 🛡️ TRINETRA (त्रिनेत्र) — SIH 2026 Master Technical Project & Prototype Report
 
 [![Smart India Hackathon 2026](https://img.shields.io/badge/SIH-2026-blue.svg?style=for-the-badge&logo=gov.in)](https://sih.gov.in/)
-[![Team](https://img.shields.io/badge/Team-TrinetraAI-red.svg?style=for-the-badge)](https://sih.gov.in/)
+[![Team](https://img.shields.io/badge/Team-Trinetra%20AI%20Vision-red.svg?style=for-the-badge)](https://sih.gov.in/)
 [![Problem Statement](https://img.shields.io/badge/Problem%20Statement-SIH26106-orange.svg?style=for-the-badge)](https://sih.gov.in/)
 [![Compliance](https://img.shields.io/badge/Compliance-Section%2063%20BSA%202023-purple.svg?style=for-the-badge)](https://indiacode.nic.in)
 [![Tests Passing](https://img.shields.io/badge/Tests-100%25%20Passing-success.svg?style=for-the-badge)](https://pytest.org)
@@ -10,11 +10,13 @@
 > **Problem Statement ID**: SIH26106  
 > **Title**: AI-Powered Email Threat Detection, GeoLocation and Forensic Intelligence Platform  
 > **Theme / Category**: Cybersecurity & Digital Forensics / Blockchain & Cybersecurity  
+> **Team Name**: Trinetra AI Vision | **Team ID**: 176248  
+> **Institute / College**: Sanaka Educational Trusts Group of Institutions (College Code: 278)  
 > **Direct Downloads**: [📄 Download Official PDF Report](TRINETRA_SIH26106_Project_Report.pdf) | [📝 Download Word Document](TRINETRA_SIH26106_Project_Report.docx) | [🌐 GitHub Repository](https://github.com/prit-om/TRINETRA-SIH26106)
 
 ---
 
-## 👥 Smart India Hackathon 2026 — Team TrinetraAI
+## 👥 Smart India Hackathon 2026 — Team Trinetra AI Vision (Team ID: 176248)
 
 | Role | Name | GitHub | Department | Year | University Roll No. | Core Responsibilities & Contributions |
 | :--- | :--- | :---: | :--- | :---: | :---: | :--- |
@@ -96,7 +98,7 @@ The engineering design of TRINETRA is anchored in foundational empirical researc
 
 ## 3. Project Planning, Agile Methodology & Engineering Workflow
 
-To deliver a battle-hardened, production-ready platform within the constraints of the Smart India Hackathon, Team TrinetraAI implemented an intensive Agile/Scrum engineering framework structured across six dedicated phases.
+To deliver a battle-hardened, production-ready platform within the constraints of the Smart India Hackathon, Team Trinetra AI Vision implemented an intensive Agile/Scrum engineering framework structured across six dedicated phases.
 
 ### 3.1 6-Phase Engineering Lifecycle (SDLC)
 
@@ -778,4 +780,4 @@ In alignment with rigorous engineering ethics, TRINETRA explicitly documents ope
 8. **Smart India Hackathon 2026**. *Problem Statement SIH26106: AI-Powered Email Threat Detection, GeoLocation and Forensic Intelligence Platform*.
 
 ---
-*Official Technical Report compiled and submitted by **Team TrinetraAI** for the **Smart India Hackathon 2026**.*
+*Official Technical Report compiled and submitted by **Team Trinetra AI Vision** for the **Smart India Hackathon 2026**.*

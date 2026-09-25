@@ -80,15 +80,15 @@ def build_docx():
 
     p_meta = doc.add_paragraph()
     p_meta.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r_meta = p_meta.add_run("Master Technical Project & Prototype Architecture Report\nSubmitted by Team TrinetraAI | Section 63 BSA 2023 Compliant")
-    r_meta.font.size = Pt(11)
+    r_meta = p_meta.add_run("Master Technical Project & Prototype Architecture Report\nSubmitted by Team Trinetra AI Vision (Team ID: 176248)\nSanaka Educational Trusts Group of Institutions (College Code: 278) | Section 63 BSA 2023 Compliant")
+    r_meta.font.size = Pt(10.5)
     r_meta.font.italic = True
     r_meta.font.color.rgb = RGBColor(0x55, 0x55, 0x55)
 
     doc.add_paragraph().paragraph_format.space_after = Pt(12)
 
     # Team Table
-    h_team = doc.add_heading("Team TrinetraAI — Roster & Core Contributions", level=2)
+    h_team = doc.add_heading("Team Trinetra AI Vision (Team ID: 176248) — Roster & Core Contributions", level=2)
     h_team.paragraph_format.space_before = Pt(12)
     h_team.paragraph_format.space_after = Pt(6)
 
@@ -170,7 +170,7 @@ def build_docx():
     # SECTION 3: PROJECT PLANNING & AGILE METHODOLOGY
     doc.add_heading("3. Project Planning, Agile Methodology & Engineering Workflow", level=1)
     doc.add_paragraph(
-        "Team TrinetraAI implemented an intensive 6-phase Agile/Scrum engineering lifecycle designed to achieve end-to-end "
+        "Team Trinetra AI Vision implemented an intensive 6-phase Agile/Scrum engineering lifecycle designed to achieve end-to-end "
         "technical readiness under the Smart India Hackathon standards:\n"
         "• Phase 1 (Weeks 1–2): RFC Protocol & Legal Foundations — Deep dive into RFC 5322, 7208 (SPF), 6376 (DKIM), 7489 (DMARC), and statutory conditions under Section 63 BSA 2023 and DPDP Act 2023.\n"
         "• Phase 2 (Weeks 3–4): Ingestion & Cryptographic Integrity — RFC 5322 parser, SHA-256 byte-stream evidence sealing before manipulation, and Verhoeff-compliant Indian PII redaction engine.\n"
@@ -400,7 +400,7 @@ class NumberedCanvas(canvas.Canvas):
         # Header (pages > 1)
         if self._pageNumber > 1:
             self.drawString(54, 750, "TRINETRA (त्रिनेत्र) — SIH26106 Technical Project & Prototype Report")
-            self.drawRightString(558, 750, "Team TrinetraAI | Section 63 BSA 2023 Compliant")
+            self.drawRightString(558, 750, "Team Trinetra AI Vision (ID: 176248) | Sec 63 BSA")
             self.setStrokeColor(colors.HexColor("#CCCCCC"))
             self.setLineWidth(0.5)
             self.line(54, 744, 558, 744)
@@ -523,11 +523,11 @@ def build_pdf():
     # Title & Metadata
     story.append(Paragraph("TRINETRA (त्रिनेत्र)", title_style))
     story.append(Paragraph("AI-Powered Email Threat Detection, GeoLocation & Forensic Intelligence Platform", sub_style))
-    story.append(Paragraph("Smart India Hackathon 2026 — Problem Statement SIH26106<br/><b>Master Technical Project & Prototype Architecture Report</b><br/>Submitted by Team TrinetraAI | Compliant with Section 63 BSA 2023", meta_style))
+    story.append(Paragraph("Smart India Hackathon 2026 — Problem Statement SIH26106<br/><b>Master Technical Project & Prototype Architecture Report</b><br/>Submitted by Team Trinetra AI Vision (Team ID: 176248) | Sanaka Educational Trusts Group of Institutions (278)", meta_style))
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#0F2B48'), spaceAfter=10))
 
     # Team Table
-    story.append(Paragraph("Team TrinetraAI — Official Roster & Contributions", h2_style))
+    story.append(Paragraph("Team Trinetra AI Vision (Team ID: 176248) — Official Roster & Contributions", h2_style))
     team_table_data = [
         [Paragraph("<b>Role</b>", body_style), Paragraph("<b>Name</b>", body_style), Paragraph("<b>GitHub</b>", body_style), Paragraph("<b>Dept / Year / Roll</b>", body_style), Paragraph("<b>Core Technical Contributions</b>", body_style)],
         [Paragraph("Team Leader", body_style), Paragraph("<b>Pritam Maity</b>", body_style), Paragraph("@prit-om", body_style), Paragraph("CSE, 3rd Yr<br/>27800124062", body_style), Paragraph("System Architecture, 3-Layer Risk Fusion Engine, Hop-0 Relay Inversion, Cryptographic Ingestion", body_style)],
@@ -587,7 +587,7 @@ def build_pdf():
     # SECTION 3
     story.append(Paragraph("3. Project Planning, Agile Methodology & Engineering Workflow", h1_style))
     story.append(Paragraph(
-        "Team TrinetraAI implemented an intensive 6-phase Agile/Scrum engineering lifecycle designed to achieve end-to-end "
+        "Team Trinetra AI Vision implemented an intensive 6-phase Agile/Scrum engineering lifecycle designed to achieve end-to-end "
         "technical readiness under the Smart India Hackathon standards:<br/>"
         "• <b>Phase 1 (Wks 1–2)</b>: RFC Standards (5322, 7208, 6376, 7489) & Legal Frameworks (Section 63 BSA 2023 & DPDP Act).<br/>"
         "• <b>Phase 2 (Wks 3–4)</b>: MIME Ingestion, immediate SHA-256 byte-stream evidence sealing, and Verhoeff Indian PII redaction.<br/>"

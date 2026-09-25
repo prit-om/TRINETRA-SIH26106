@@ -3,7 +3,9 @@
   "project_metadata": {
     "project_name": "TRINETRA",
     "full_title": "Trinetra: AI-Powered Email Threat Detection, GeoLocation & Forensic Intelligence Platform",
-    "team_name": "TrinetraAI",
+    "team_name": "Trinetra AI Vision",
+    "team_id": "176248",
+    "college_name": "Sanaka Educational Trusts Group of Institutions 278",
     "team_members": [
       { "role": "Team Leader", "name": "Pritam Maity", "github": "prit-om", "department": "CSE", "year": "3rd Year", "roll_no": "27800124062" },
       { "role": "Member", "name": "Sneha Kumari Mahato", "github": "TheShadowRoot", "department": "CSE (AI & ML)", "year": "3rd Year", "roll_no": "27830824047" },
