@@ -41,12 +41,7 @@
 
 ---
 
-## 🏗️ System Architecture
 
-### 📐 Architectural Blueprint
-<p align="center">
-  <img src="docs/images/system_architecture.png" alt="TRINETRA System Architecture Blueprint" width="95%" />
-</p>
 
 ### 🔄 End-to-End Forensic Processing Pipeline
 ```mermaid
