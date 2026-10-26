@@ -93,7 +93,7 @@ def process_track_b(
     # ------------------------------------------------------------------
 
     try:
-        url_findings = analyze_urls(urls_found) or []
+        url_findings = analyze_urls(urls_found, air_gapped=air_gapped) or []
     except Exception as exc:
         logger.exception("URL analysis failed: %s", exc)
         url_findings = []

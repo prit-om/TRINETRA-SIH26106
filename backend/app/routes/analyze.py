@@ -37,31 +37,101 @@ router = APIRouter()
 
 
 # ============================================================
-# ROLE / ACCESS
+# ROLE / ACCESS CONTROL
 # ============================================================
 
-def _role(api_key, requested="analyst"):
+def _authenticate_request(
+    x_trinetra_api_key: str | None = None,
+    authorization: str | None = None,
+    require_investigator: bool = False,
+) -> str:
+    """
+    Authenticate and authorize requests strictly via request headers.
+
+    Rules:
+    - Query-parameter authentication is disallowed (CWE-598).
+    - Credentials must be provided via 'x-trinetra-api-key' or 'Authorization: Bearer <key>'.
+    - If API keys are configured (ANALYST_API_KEY or INVESTIGATOR_API_KEY):
+      * Missing or invalid credentials return 401 Unauthorized.
+      * Matching INVESTIGATOR_API_KEY grants 'investigator' role.
+      * Matching ANALYST_API_KEY grants 'analyst' role.
+      * If an endpoint requires investigator role, analysts receive 403 Forbidden.
+    - If no API keys are configured:
+      * If DEMO_MODE is not enabled (default), fails closed with 503 Service Unavailable
+        to prevent silent public exposure of sensitive endpoints in unconfigured deployments.
+      * If DEMO_MODE is explicitly enabled:
+        - The caller is assigned 'analyst' role.
+        - The caller CANNOT gain 'investigator' privileges by requesting them.
+        - Any endpoint requiring investigator privileges returns 403 Forbidden.
+    """
     s = get_settings()
 
-    if (
-        requested == "investigator"
-        and s.investigator_api_key
-        and api_key == s.investigator_api_key
-    ):
-        return "investigator"
+    token = None
+    if x_trinetra_api_key and str(x_trinetra_api_key).strip():
+        token = str(x_trinetra_api_key).strip()
+    elif authorization and str(authorization).strip():
+        auth_val = str(authorization).strip()
+        token = auth_val[7:].strip() if auth_val.lower().startswith("bearer ") else auth_val
 
-    if s.analyst_api_key and api_key == s.analyst_api_key:
-        return "analyst"
+    has_investigator_key = bool(s.investigator_api_key and s.investigator_api_key.strip())
+    has_analyst_key = bool(s.analyst_api_key and s.analyst_api_key.strip())
+    keys_configured = has_investigator_key or has_analyst_key
+    demo_mode_enabled = bool(
+        getattr(s, "demo_mode", False)
+        or os.getenv("DEMO_MODE", "").lower() in {"true", "1", "yes"}
+    )
 
-    # Demo mode:
-    # explicit role is accepted only when no API keys are configured.
-    if not s.analyst_api_key and not s.investigator_api_key:
-        return (
-            requested
-            if requested in {"analyst", "investigator", "lea"}
-            else "analyst"
+    if keys_configured:
+        if not token:
+            raise HTTPException(
+                status_code=401,
+                detail="Authentication required: missing API key in headers.",
+            )
+
+        if has_investigator_key and token == s.investigator_api_key.strip():
+            return "investigator"
+
+        if has_analyst_key and token == s.analyst_api_key.strip():
+            if require_investigator:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Investigator privileges required.",
+                )
+            return "analyst"
+
+        raise HTTPException(
+            status_code=401,
+            detail="Authentication failed: invalid API key.",
         )
 
+    # API keys are absent/unconfigured:
+    if not demo_mode_enabled:
+        raise HTTPException(
+            status_code=503,
+            detail="Server security configuration error: API keys are not configured. Configure ANALYST_API_KEY and INVESTIGATOR_API_KEY, or set DEMO_MODE=true for local development.",
+        )
+
+    # Explicit Demo Mode (local development only)
+    if require_investigator:
+        raise HTTPException(
+            status_code=403,
+            detail="Investigator privileges require a configured INVESTIGATOR_API_KEY.",
+        )
+
+    return "analyst"
+
+
+def _role(api_key: str | None, requested: str = "analyst") -> str:
+    """
+    Backwards compatibility helper for resolving role from API key.
+    Note: 'requested' is ignored; role is determined strictly by credentials.
+    """
+    s = get_settings()
+    token = str(api_key).strip() if api_key else ""
+    if s.investigator_api_key and token == s.investigator_api_key.strip():
+        return "investigator"
+    if s.analyst_api_key and token == s.analyst_api_key.strip():
+        return "analyst"
     return "analyst"
 
 
@@ -308,9 +378,10 @@ def analyze_raw(
     # 13. Determine access role
     # --------------------------------------------------------
 
-    role = _role(
-        None,
-        requested_role,
+    role = (
+        requested_role
+        if requested_role in {"investigator", "lea"}
+        else "analyst"
     )
 
     # --------------------------------------------------------
@@ -499,7 +570,16 @@ async def analyze(
     role: str = Form(default="analyst"),
     air_gapped: bool = Form(default=False),
     x_trinetra_api_key: str | None = Header(default=None),
+    authorization: str | None = Header(default=None),
 ):
+    # --------------------------------------------------------
+    # Server-side authentication and role resolution
+    # --------------------------------------------------------
+    auth_role = _authenticate_request(
+        x_trinetra_api_key=x_trinetra_api_key,
+        authorization=authorization,
+    )
+
     # --------------------------------------------------------
     # Input validation
     # --------------------------------------------------------
@@ -616,10 +696,7 @@ async def analyze(
         return analyze_raw(
             raw,
             "manual",
-            _role(
-                x_trinetra_api_key,
-                role,
-            ),
+            auth_role,
             name,
             evidence_override=evidence_override,
             stored_raw=original_raw,
@@ -670,7 +747,14 @@ async def analyze(
 # ============================================================
 
 @router.get("/cases")
-def cases():
+def cases(
+    x_trinetra_api_key: str | None = Header(default=None),
+    authorization: str | None = Header(default=None),
+):
+    _authenticate_request(
+        x_trinetra_api_key=x_trinetra_api_key,
+        authorization=authorization,
+    )
     return list_cases()
 
 
@@ -679,7 +763,14 @@ def cases():
 # ============================================================
 
 @router.get("/alerts")
-def high_risk_alerts():
+def high_risk_alerts(
+    x_trinetra_api_key: str | None = Header(default=None),
+    authorization: str | None = Header(default=None),
+):
+    _authenticate_request(
+        x_trinetra_api_key=x_trinetra_api_key,
+        authorization=authorization,
+    )
     return alerts()
 
 
@@ -690,19 +781,17 @@ def high_risk_alerts():
 @router.get("/cases/{case_id}")
 def case(
     case_id: str,
-    x_trinetra_api_key: str | None = Header(
-        default=None
-    ),
-    role: str = "analyst",
+    x_trinetra_api_key: str | None = Header(default=None),
+    authorization: str | None = Header(default=None),
 ):
-    r = _role(
-        x_trinetra_api_key,
-        role,
+    auth_role = _authenticate_request(
+        x_trinetra_api_key=x_trinetra_api_key,
+        authorization=authorization,
     )
 
     data = get_case(
         case_id,
-        include_raw=r in {
+        include_raw=auth_role in {
             "investigator",
             "lea",
         },
@@ -722,7 +811,17 @@ def case(
 # ============================================================
 
 @router.get("/cases/{case_id}/verify")
-def verify_case(case_id: str):
+def verify_case(
+    case_id: str,
+    x_trinetra_api_key: str | None = Header(default=None),
+    authorization: str | None = Header(default=None),
+):
+    _authenticate_request(
+        x_trinetra_api_key=x_trinetra_api_key,
+        authorization=authorization,
+        require_investigator=True,
+    )
+
     import hashlib
 
     data = get_case(
@@ -767,7 +866,16 @@ def verify_case(case_id: str):
 # ============================================================
 
 @router.get("/cases/{case_id}/report.pdf")
-def case_pdf(case_id: str):
+def case_pdf(
+    case_id: str,
+    x_trinetra_api_key: str | None = Header(default=None),
+    authorization: str | None = Header(default=None),
+):
+    _authenticate_request(
+        x_trinetra_api_key=x_trinetra_api_key,
+        authorization=authorization,
+    )
+
     from app.track_b.pdf_report import (
         generate_pdf_report
     )
@@ -803,7 +911,14 @@ def case_pdf(case_id: str):
 # ============================================================
 
 @router.get("/monitor/status")
-def monitor_status_route():
+def monitor_status_route(
+    x_trinetra_api_key: str | None = Header(default=None),
+    authorization: str | None = Header(default=None),
+):
+    _authenticate_request(
+        x_trinetra_api_key=x_trinetra_api_key,
+        authorization=authorization,
+    )
     return monitor_status()
 
 
@@ -818,7 +933,14 @@ def monitor_start(
     imap_server: str = Form(...),
     folder: str = Form(default="INBOX"),
     interval: int = Form(default=20),
+    x_trinetra_api_key: str | None = Header(default=None),
+    authorization: str | None = Header(default=None),
 ):
+    _authenticate_request(
+        x_trinetra_api_key=x_trinetra_api_key,
+        authorization=authorization,
+    )
+
     def callback(
         raw,
         source="imap",
@@ -852,5 +974,12 @@ def monitor_start(
 # ============================================================
 
 @router.post("/monitor/stop")
-def monitor_stop():
+def monitor_stop(
+    x_trinetra_api_key: str | None = Header(default=None),
+    authorization: str | None = Header(default=None),
+):
+    _authenticate_request(
+        x_trinetra_api_key=x_trinetra_api_key,
+        authorization=authorization,
+    )
     return stop_monitor()

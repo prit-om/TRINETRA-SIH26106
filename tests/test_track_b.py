@@ -30,7 +30,7 @@ def test_attachment():
 
 def test_process(monkeypatch):
     import app.track_b.process as p
-    monkeypatch.setattr(p,"analyze_urls",lambda x:[{"domain":"evil.example","is_malicious":True,"is_lookalike_domain":False}])
+    monkeypatch.setattr(p, "analyze_urls", lambda x, air_gapped=False: [{"domain": "evil.example", "is_malicious": True, "is_lookalike_domain": False}])
     monkeypatch.setattr(p,"analyze_attachments",lambda x:[])
     monkeypatch.setattr(p,"geolocate_origin",lambda x:{"earliest_external_ip":"1.2.3.4"})
     out=p.process_track_b({"sender_email":"ceo@example.com","urls_found":["x"],"attachments_found":[],"received_chain":[],

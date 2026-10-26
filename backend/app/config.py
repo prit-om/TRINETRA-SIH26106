@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     analyst_api_key: str | None = None
     investigator_api_key: str | None = None
     enable_external_enrichment: bool = True
+    demo_mode: bool = False
 
     model_config = SettingsConfigDict(
         env_file=".env",
