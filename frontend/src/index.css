@@ -881,9 +881,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
   font-size: 13px;
   font-weight: 900;
 }
-.tn-trace-node strong { color: #f1f5f9; font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; display: block; }
-.tn-trace-node span { margin-top: 4px; color: var(--tn-text-secondary); font-size: 13px; display: block; }
-.tn-trace-node small { margin-top: 4px; color: var(--tn-muted); font-size: 12px; display: block; }
+.tn-trace-node strong { color: #f1f5f9; font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; display: block; word-break: break-all; overflow-wrap: anywhere; }
+.tn-trace-node span { margin-top: 4px; color: var(--tn-text-secondary); font-size: 13px; display: block; word-break: break-all; overflow-wrap: anywhere; }
+.tn-trace-node small { margin-top: 4px; color: var(--tn-muted); font-size: 12px; display: block; word-break: break-all; overflow-wrap: anywhere; }
 .tn-inline-warning {
   display: flex;
   align-items: center;

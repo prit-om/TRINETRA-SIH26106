@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   AlertCircle,
   CheckCircle2,
+  Lock,
   FileSearch,
   Fingerprint,
   Link2,
@@ -47,7 +48,20 @@ export default function AnalysisView({ report, setActiveTab, backendHealthy, onS
       const data = await res.json();
       setVerifyResult(data);
     } catch (err) {
-      setVerifyResult({ valid: false, error: err.message || 'Verification failed' });
+      const msg = err.message || '';
+      const isAuth =
+        msg.toLowerCase().includes('investigator') ||
+        msg.toLowerCase().includes('privilege') ||
+        msg.toLowerCase().includes('403') ||
+        msg.toLowerCase().includes('401') ||
+        msg.toLowerCase().includes('key');
+      setVerifyResult({
+        valid: false,
+        isAuthError: isAuth,
+        error: isAuth
+          ? 'Investigator key (INVESTIGATOR_API_KEY) required to verify raw custody hash'
+          : msg || 'Verification failed',
+      });
     } finally {
       setVerifying(false);
     }
@@ -151,13 +165,37 @@ export default function AnalysisView({ report, setActiveTab, backendHealthy, onS
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '7px',
-                    background: verifyResult.valid ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-                    color: verifyResult.valid ? '#34d399' : '#f87171',
-                    border: `1.5px solid ${verifyResult.valid ? '#10b981' : '#ef4444'}`,
+                    background: verifyResult.valid
+                      ? 'rgba(16, 185, 129, 0.2)'
+                      : verifyResult.isAuthError
+                      ? 'rgba(234, 179, 8, 0.2)'
+                      : 'rgba(239, 68, 68, 0.2)',
+                    color: verifyResult.valid
+                      ? '#34d399'
+                      : verifyResult.isAuthError
+                      ? '#facc15'
+                      : '#f87171',
+                    border: `1.5px solid ${
+                      verifyResult.valid
+                        ? '#10b981'
+                        : verifyResult.isAuthError
+                        ? '#eab308'
+                        : '#ef4444'
+                    }`,
                   }}
                 >
-                  {verifyResult.valid ? <CheckCircle2 style={{ width: 16, height: 16 }} /> : <AlertCircle style={{ width: 16, height: 16 }} />}
-                  {verifyResult.valid ? 'SHA-256 Integrity Sealed (Untampered)' : `Tamper Warning: ${verifyResult.error || 'Mismatch'}`}
+                  {verifyResult.valid ? (
+                    <CheckCircle2 style={{ width: 16, height: 16 }} />
+                  ) : verifyResult.isAuthError ? (
+                    <Lock style={{ width: 16, height: 16 }} />
+                  ) : (
+                    <AlertCircle style={{ width: 16, height: 16 }} />
+                  )}
+                  {verifyResult.valid
+                    ? 'SHA-256 Integrity Sealed (Untampered)'
+                    : verifyResult.isAuthError
+                    ? `Access Restricted: ${verifyResult.error}`
+                    : `Tamper Warning: SHA-256 Hash Mismatch Detected`}
                 </span>
               )}
             </div>

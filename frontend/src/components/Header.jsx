@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Activity, CheckCircle2, FileSearch, FolderClock, RefreshCw, ShieldAlert, UploadCloud, XCircle } from 'lucide-react';
-import { API_BASE_URL, apiFetch } from '../api';
+import { Activity, CheckCircle2, FileSearch, FolderClock, KeyRound, RefreshCw, ShieldAlert, UploadCloud, XCircle } from 'lucide-react';
+import { API_BASE_URL, apiFetch, getStoredApiKey, setStoredApiKey } from '../api';
 
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Analysis', icon: FileSearch },
@@ -53,10 +53,29 @@ export default function Header({ activeTab, setActiveTab, onHealthChange }) {
             </button>
           ))}
         </nav>
-        <div className={`tn-health ${health}`} title={`Backend health: ${statusText}`}>
-          {health === 'checking' ? <RefreshCw className="tn-spin" /> : health === 'connected' ? <CheckCircle2 /> : <XCircle />}
-          <span>Backend</span>
-          <strong>{statusText}</strong>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button
+            type="button"
+            className="tn-nav-item"
+            title="Configure Analyst / Investigator API Key"
+            onClick={() => {
+              const current = getStoredApiKey();
+              const nextKey = window.prompt("Enter TRINETRA API Key (Leave blank for Demo Mode):", current);
+              if (nextKey !== null) {
+                setStoredApiKey(nextKey);
+                window.location.reload();
+              }
+            }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', padding: '6px 12px' }}
+          >
+            <KeyRound style={{ width: 14, height: 14 }} />
+            <span>{getStoredApiKey() ? 'API Key Active' : 'Demo Mode'}</span>
+          </button>
+          <div className={`tn-health ${health}`} title={`Backend health: ${statusText}`}>
+            {health === 'checking' ? <RefreshCw className="tn-spin" /> : health === 'connected' ? <CheckCircle2 /> : <XCircle />}
+            <span>Backend</span>
+            <strong>{statusText}</strong>
+          </div>
         </div>
       </div>
     </header>

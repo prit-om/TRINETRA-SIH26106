@@ -202,7 +202,7 @@ def _build_summary(n, h):
             key=lambda z: z[1],
             reverse=True,
         )
-        if x[1] > 0
+        if x[1] >= 0.35
     ]
 
     if not active:
